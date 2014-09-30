@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(中华人民共和国) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
-#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -77,11 +75,11 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "关于 ProSpy"
 FONT 9, "宋体", 0, 0, 0x1
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,21
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
     LTEXT           "ProSpy 1.0 版",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2014",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "确定",IDOK,169,7,50,16,WS_GROUP
-    LTEXT           "桌面软件测试辅助工具",IDC_STATIC,40,46,81,8
+    LTEXT           "软件测试辅助工具",IDC_STATIC,40,46,65,8
 END
 
 IDD_PROSPY_DIALOG DIALOGEX 0, 0, 367, 254
@@ -94,9 +92,9 @@ BEGIN
     DEFPUSHBUTTON   "开始",ID_BTN_START,245,227,50,16
     PUSHBUTTON      "停止",ID_BTN_STOP,310,227,50,16
     CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,39,353,177
-    LTEXT           "捕获鼠标坐标: Ctrl+Shift+F10",IDC_STATIC,10,9,113,8
-    LTEXT           "停止执行: Ctrl+Shift+F11",IDC_STATIC,171,10,97,8
-    ICON            IDI_ICON1,IDC_STATIC_IMG,15,221,21,21
+    LTEXT           "捕获鼠标坐标: Ctrl+Shift+1",IDC_STATIC,10,9,105,8
+    LTEXT           "停止执行: Ctrl+Shift+2",IDC_STATIC,171,10,89,8
+    ICON            IDI_ICON1,IDC_STATIC_IMG,12,224,21,21
     LTEXT           "W: 上移  S:下移  Delete: 删除",IDC_STATIC,11,24,117,8
 END
 
@@ -205,7 +203,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -263,7 +261,7 @@ END
 // Menu
 //
 
-IDR_MENU_MAINFRAME MENU 
+IDR_MENU_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -284,7 +282,7 @@ BEGIN
     END
 END
 
-IDR_MENU_CONTEXT MENU 
+IDR_MENU_CONTEXT MENU
 BEGIN
     POPUP "Context"
     BEGIN
@@ -301,13 +299,13 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "关于 ProSpy(&A)..."
     IDP_SOCKETS_INIT_FAILED "Windows 套接字初始化失败。"
 END
 
-#endif    // 中文(中华人民共和国) resources
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

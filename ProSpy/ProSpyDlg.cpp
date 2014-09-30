@@ -125,8 +125,8 @@ BOOL CProSpyDlg::OnInitDialog()
 	ShowWindow(SW_MINIMIZE);
 
 	// TODO: 在此添加额外的初始化代码
-	BOOL bRet = RegisterHotKey(GetSafeHwnd(),HOTKEY_CAPTURE_MOUSE,MOD_SHIFT|MOD_CONTROL,VK_F10);
-	bRet |= RegisterHotKey(GetSafeHwnd(),HOTKEY_STOP,MOD_SHIFT|MOD_CONTROL,VK_F11);
+	BOOL bRet = RegisterHotKey(GetSafeHwnd(),HOTKEY_CAPTURE_MOUSE,MOD_SHIFT|MOD_CONTROL,'1');
+	bRet |= RegisterHotKey(GetSafeHwnd(),HOTKEY_STOP,MOD_SHIFT|MOD_CONTROL,'2');
 	if (!bRet)
 	{
 		AfxMessageBox(_T("Failed to set shortcut key"));
