@@ -7,6 +7,7 @@
 #include "RunTimeDlg.h"
 #include "RecordEditDlg.h"
 #include "MouseEditDlg.h"
+#include "KeyEditDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -197,19 +198,19 @@ void CProSpyDlg::AddItemToList( OpItem *pItem )
 	CString strItemName;
 	switch(pItem->type)
 	{
-	case OT_RECORD:
+	case OP_RECORD:
 		strItemName.Format(_T("Record(%s)"),pItem->detail.record.szProcessName); 
 		break;
-	case OT_RCLICK:
+	case OP_RCLICK:
 		strItemName.Format(_T("Right Click")); 
 		break;
-	case OT_LCLICK:
+	case OP_LCLICK:
 		strItemName.Format(_T("Left Click")); 
 		break;
-	case OT_DBCICK:
+	case OP_DBCICK:
 		strItemName.Format(_T("Double Click")); 
 		break;
-	case OT_KEY_INPUT:
+	case OP_KEY_INPUT:
 		strItemName.Format(_T("Keyboard Input")); 
 		break;
 	case OT_UNKNOWN:
@@ -285,8 +286,6 @@ void CProSpyDlg::OnBnClickedBtnStop()
 	if (m_pThread !=NULL)
 	{
 		m_pThread->Stop(); 
-		delete m_pThread;
-		m_pThread = NULL;
 	}
 }
 
@@ -365,7 +364,19 @@ void CProSpyDlg::OnFileSaveAs()
 void CProSpyDlg::OnEditAddkeyboardevent()
 {
 	// TODO: 在此添加命令处理程序代码
-	AfxMessageBox(_T("添加键盘事件"));
+	short key=VkKeyScan('j');
+	short key2=VkKeyScan('*');
+	short key3=VkKeyScan(' ');
+	OpItem *pItem = new OpItem;
+	pItem->type = OP_KEY_INPUT; 
+	CKeyEditDlg dlg(pItem);
+	if(dlg.DoModal()!=IDOK)
+	{
+		delete pItem;
+		return;
+	} 
+	m_oProj.AddItem(pItem);
+	AddItemToList(pItem);
 }
 
 void CProSpyDlg::OnEditAddmouseevent()
@@ -378,7 +389,7 @@ void CProSpyDlg::OnEditAddresourcerecord()
 {
 	// TODO: 在此添加命令处理程序代码
 	OpItem *pItem = new OpItem;
-	pItem->type = OT_RECORD;
+	pItem->type = OP_RECORD;
 	pItem->detail.record.dwMask = RECORD_PID | RECORD_WORK_SET | RECORD_VIRTUAL_MEM |RECORD_HANDLE_COUNT;
  	CRecordEditDlg dlg(pItem);
  	if(dlg.DoModal()!=IDOK)
@@ -433,22 +444,26 @@ void CProSpyDlg::OnContextEdit()
 	OpItem * pItem = (OpItem*)m_opList.GetItemData(index);
 	switch(pItem->type)
 	{
-	case OT_RECORD:
+	case OP_RECORD:
 		{
 			CRecordEditDlg dlg(pItem);
 			dlg.DoModal();
 			break;
 		}
-	case OT_LCLICK:
-	case OT_RCLICK:
-	case OT_DBCICK:
+	case OP_LCLICK:
+	case OP_RCLICK:
+	case OP_DBCICK:
 		{
 			CMouseEditDlg dlg(pItem);
 		 	dlg.DoModal();
 			break;
 		}
-	case OT_KEY_INPUT:
-		//
+	case OP_KEY_INPUT:
+		{
+			CKeyEditDlg dlg(pItem);
+			dlg.DoModal();
+			break;
+		}
 		break;
 	}
 	UpdateItem(index,pItem);
@@ -509,6 +524,11 @@ LRESULT CProSpyDlg::OnThreadStop( WPARAM wparam,LPARAM lparam )
 	CString str;
 	str.Format(_T("已成功执行%d次"),(int)wparam);
 	AfxMessageBox(str);
+	if (m_pThread != nullptr)
+	{
+		delete m_pThread;
+		m_pThread = NULL;
+	}
 	return TRUE;
 }
 
@@ -534,7 +554,7 @@ void CProSpyDlg::OnLvnKeydownList1(NMHDR *pNMHDR, LRESULT *pResult)
 void CProSpyDlg::AddMouseOperation( int x, int y )
 {
 	OpItem *pItem = new OpItem;
-	pItem->type = OT_LCLICK; //默认左击 
+	pItem->type = OP_LCLICK; //默认左击 
 	pItem->detail.pos.x = x;
 	pItem->detail.pos.y = y;
 	CMouseEditDlg dlg(pItem);

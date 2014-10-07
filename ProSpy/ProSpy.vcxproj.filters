@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MouseEditDlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ProSpy.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -51,11 +48,17 @@
     <ClCompile Include="RunTimeDlg.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="KeyEditDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseEditDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="LimitEdit.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MouseEditDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ProSpy.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -87,6 +90,15 @@
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="RunTimeDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyEditDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseEditDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="LimitEdit.h">
       <Filter>GUI</Filter>
     </ClInclude>
   </ItemGroup>

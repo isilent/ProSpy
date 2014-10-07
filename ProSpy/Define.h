@@ -4,15 +4,16 @@
 #pragma once
 
 #define PROCESS_NAME_LEN 64
+#define KEYINPUT_MAX     32
 
 enum OPERATOR_TYPE
 {
-	OT_UNKNOWN,
-	OT_RECORD,      //资源记录
-	OT_RCLICK,      //鼠标右键
-	OT_LCLICK,      //鼠标左键
-	OT_DBCICK,      //鼠标双击
-	OT_KEY_INPUT    //键盘输入
+	OP_UNKNOWN,
+	OP_RECORD,      //资源记录
+	OP_RCLICK,      //鼠标右键
+	OP_LCLICK,      //鼠标左键
+	OP_DBCICK,      //鼠标双击
+	OP_KEY_INPUT    //键盘输入
 };
 
 
@@ -58,7 +59,11 @@ struct OpRecord
 
 struct OpKeyInput
 {
-	DWORD dwKey;
+	DWORD dwKey[KEYINPUT_MAX];
+	void Clear()
+	{
+		memset(dwKey,0,sizeof(DWORD)*KEYINPUT_MAX);
+	}
 };
 
 
@@ -68,12 +73,12 @@ struct OpItem
 	union OpDetail{
 		OpRecord record;
 		POINT pos;
-		UINT nkey; 
+		OpKeyInput keyinput;
 	} detail;
 	DWORD dwTimeSpan;
 	OpItem()
 	{
-		type = OT_UNKNOWN;
+		type = OP_UNKNOWN;
 		dwTimeSpan = 0;
 		memset(&detail,0,sizeof(detail));
 	}

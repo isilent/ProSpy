@@ -15,6 +15,7 @@ public:
 protected:
 	void Record(const OpRecord &op);
 	void MouseClick(const OpItem* pItem);
+	void KeyInput(const OpItem* pItem);
 	list<OpItem*> m_ItemList;
 	volatile bool m_bRunning;
 	int  m_nCount;

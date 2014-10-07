@@ -47,15 +47,15 @@ void CMouseEditDlg::OnOK()
 
 	if(((CButton*)GetDlgItem(IDC_RADIO1))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->type = OT_LCLICK;
+		m_pItem->type = OP_LCLICK;
 	}
 	else if (((CButton*)GetDlgItem(IDC_RADIO2))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->type = OT_RCLICK;
+		m_pItem->type = OP_RCLICK;
 	}
 	else if (((CButton*)GetDlgItem(IDC_RADIO3))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->type = OT_DBCICK;
+		m_pItem->type = OP_DBCICK;
 	}
 	m_pItem->dwTimeSpan = m_nTimeSpan;
 	CDialog::OnOK();
@@ -70,13 +70,13 @@ BOOL CMouseEditDlg::OnInitDialog()
 	m_nY = m_pItem->detail.pos.y; 
 	switch(m_pItem->type)
 	{
-	case OT_LCLICK:
+	case OP_LCLICK:
 		((CButton*)GetDlgItem(IDC_RADIO1))->SetCheck(BST_CHECKED);
 		break;
-	case OT_RCLICK:
+	case OP_RCLICK:
 		((CButton*)GetDlgItem(IDC_RADIO2))->SetCheck(BST_CHECKED);
 		break;
-	case OT_DBCICK:
+	case OP_DBCICK:
 		((CButton*)GetDlgItem(IDC_RADIO3))->SetCheck(BST_CHECKED);
 		break;
 	}

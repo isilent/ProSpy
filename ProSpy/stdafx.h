@@ -53,9 +53,9 @@
 #include <afxsock.h>		// MFC Ì×½Ó×ÖÀ©Õ¹
 
 
-#include <map>
 #include <string>
 #include <list>
+#include <vector>
 using namespace std;
 
 #include <process.h>
@@ -63,6 +63,7 @@ using namespace std;
 #pragma comment(lib,"Psapi.lib")
 
 #include "Utility.h"
+#include <afxcontrolbars.h>
 
 
 

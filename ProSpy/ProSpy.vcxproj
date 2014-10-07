@@ -108,6 +108,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="KeyEditDlg.cpp" />
+    <ClCompile Include="LimitEdit.cpp" />
     <ClCompile Include="MouseEditDlg.cpp" />
     <ClCompile Include="ProSpy.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -123,6 +125,8 @@
     <ClCompile Include="RunTimeDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="KeyEditDlg.h" />
+    <ClInclude Include="LimitEdit.h" />
     <ClInclude Include="MouseEditDlg.h" />
     <ClInclude Include="ProSpy.h" />
     <ClInclude Include="Resource.h" />

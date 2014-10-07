@@ -27,15 +27,18 @@ unsigned int __stdcall Run( PVOID pParam )
 		{
 			switch((*iT)->type)
 			{
-			case OT_RECORD:
+			case OP_RECORD:
 				pThread->Record((*iT)->detail.record);
 				break;
-			case OT_LCLICK: 
-			case OT_RCLICK: 
-			case OT_DBCICK:
+			case OP_LCLICK: 
+			case OP_RCLICK: 
+			case OP_DBCICK:
 				pThread->MouseClick((*iT));
 				break;
-			case OT_KEY_INPUT:
+			case OP_KEY_INPUT:
+				pThread->KeyInput((*iT));
+				break;
+			default:
 				break;
 			}
 			Sleep((*iT)->dwTimeSpan *10);
@@ -196,21 +199,66 @@ void CRunThread::MouseClick( const OpItem* pItem)
 	SetCursorPos(pItem->detail.pos.x,pItem->detail.pos.y);
 	DWORD keydow = 0,keyup = 0; 
 	 
-	if(pItem->type == OT_LCLICK || pItem->type == OT_DBCICK )
+	if(pItem->type == OP_LCLICK || pItem->type == OP_DBCICK )
 	{
 		keydow = MOUSEEVENTF_LEFTDOWN;
 		keyup = MOUSEEVENTF_LEFTUP; 
 	} 
-	else if(pItem->type == OT_RCLICK)
+	else if(pItem->type == OP_RCLICK)
 	{
 		keydow = MOUSEEVENTF_RIGHTDOWN;
 		keyup = MOUSEEVENTF_RIGHTUP;
 	}
 	mouse_event(keydow,0,0,0,0);
 	mouse_event(keyup,0,0,0,0);
-	if (pItem->type == OT_DBCICK)
+	if (pItem->type == OP_DBCICK)
 	{
 		mouse_event(keydow,0,0,0,0);
 		mouse_event(keyup,0,0,0,0);
 	}
+}
+
+void CRunThread::KeyInput(const OpItem* pItem)
+{
+	vector<INPUT> inputAry;
+	vector<INPUT> releaseAry;
+	for (int i=0;i<KEYINPUT_MAX;i++)
+	{
+		DWORD dwKey = pItem->detail.keyinput.dwKey[i];
+		if (dwKey == 0)
+		{
+			break;
+		}
+		INPUT keydown;
+		memset(&keydown,0,sizeof(INPUT));
+		keydown.type = INPUT_KEYBOARD;
+
+		INPUT keyup;
+		memset(&keyup,0,sizeof(INPUT));
+		keyup.type = INPUT_KEYBOARD;
+		keyup.ki.dwFlags = KEYEVENTF_KEYUP;
+
+		if((dwKey & 0x010000) == 0x010000) //¿ØÖÆ¼ü
+		{ 
+			keydown.ki.wVk = LOWORD(dwKey); 
+			keyup.ki.wVk= keydown.ki.wVk;
+			inputAry.push_back(keydown);
+			releaseAry.push_back(keyup);
+		}  
+		else
+		{
+			keydown.ki.wVk = VkKeyScan(LOWORD(dwKey)); 
+			keyup.ki.wVk = keydown.ki.wVk;
+			inputAry.push_back(keydown);
+			inputAry.push_back(keyup);
+		}
+	}
+	if (!inputAry.empty())
+	{
+		SendInput(inputAry.size(),&inputAry[0],sizeof(INPUT));
+	} 
+	if (!releaseAry.empty())
+	{
+		SendInput(releaseAry.size(),&releaseAry[0],sizeof(INPUT));
+	} 
 }
