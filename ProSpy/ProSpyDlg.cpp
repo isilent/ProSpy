@@ -57,6 +57,7 @@ CProSpyDlg::CProSpyDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pThread = NULL;
+	m_bCaptureCursor =false;
 }
 
 void CProSpyDlg::DoDataExchange(CDataExchange* pDX)
@@ -91,6 +92,7 @@ BEGIN_MESSAGE_MAP(CProSpyDlg, CDialog)
 	ON_COMMAND(ID_CONTEXT_MOVEDOWN, &CProSpyDlg::OnContextMovedown)
 	ON_MESSAGE(WM_THREAD_STOP,&CProSpyDlg::OnThreadStop)
 	ON_NOTIFY(LVN_KEYDOWN, IDC_LIST1, &CProSpyDlg::OnLvnKeydownList1)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -213,7 +215,7 @@ void CProSpyDlg::AddItemToList( OpItem *pItem )
 	case OP_KEY_INPUT:
 		strItemName.Format(_T("Keyboard Input")); 
 		break;
-	case OT_UNKNOWN:
+	case OP_UNKNOWN:
 		strItemName.Format(_T("Unknown")); 
 		break;
 	} 
@@ -390,7 +392,7 @@ void CProSpyDlg::OnEditAddresourcerecord()
 	// TODO: 在此添加命令处理程序代码
 	OpItem *pItem = new OpItem;
 	pItem->type = OP_RECORD;
-	pItem->detail.record.dwMask = RECORD_PID | RECORD_WORK_SET | RECORD_VIRTUAL_MEM |RECORD_HANDLE_COUNT;
+	pItem->detail.record.dwMask = RECORD_PID | RECORD_VIRTUAL_MEM | RECORD_HANDLE_COUNT;
  	CRecordEditDlg dlg(pItem);
  	if(dlg.DoModal()!=IDOK)
  	{
@@ -524,7 +526,7 @@ LRESULT CProSpyDlg::OnThreadStop( WPARAM wparam,LPARAM lparam )
 	CString str;
 	str.Format(_T("已成功执行%d次"),(int)wparam);
 	AfxMessageBox(str);
-	if (m_pThread != nullptr)
+	if (m_pThread != NULL)
 	{
 		delete m_pThread;
 		m_pThread = NULL;
@@ -565,4 +567,28 @@ void CProSpyDlg::AddMouseOperation( int x, int y )
 	} 
 	m_oProj.AddItem(pItem);
 	AddItemToList(pItem);
+}
+void CProSpyDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialog::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	if (IsWindow(m_opList.GetSafeHwnd()))
+	{
+		m_opList.SetWindowPos(NULL,0,0,cx-20,cy-110,SWP_NOMOVE);
+	}
+	if (IsWindow(m_cStatic.GetSafeHwnd()))
+	{
+		m_cStatic.SetWindowPos(NULL,12,cy-38,0,0,SWP_NOSIZE);
+	}
+	CWnd *pBtnStart =GetDlgItem(ID_BTN_START);
+	CWnd *pBtnStop =GetDlgItem(ID_BTN_STOP);
+	if (IsWindow(pBtnStart->GetSafeHwnd()))
+	{
+		pBtnStart->SetWindowPos(NULL,cx-170,cy-35,0,0,SWP_NOSIZE);
+	}
+	if (IsWindow(pBtnStop->GetSafeHwnd()))
+	{
+		pBtnStop->SetWindowPos(NULL,cx-83,cy-35,0,0,SWP_NOSIZE);
+	}
 }

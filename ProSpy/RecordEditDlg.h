@@ -31,4 +31,6 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedBtnSelProc();
 	afx_msg void OnBnClickedBtnSelPath();
+	afx_msg void OnBnClickedBtnAll();
+	afx_msg void OnBnClickedBtnNone();
 };

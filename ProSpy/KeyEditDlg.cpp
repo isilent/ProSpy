@@ -3,8 +3,7 @@
 
 #include "stdafx.h"
 #include "ProSpy.h"
-#include "KeyEditDlg.h"
-#include "afxdialogex.h"
+#include "KeyEditDlg.h" 
 
 
 // CKeyEditDlg ¶Ô»°¿ò

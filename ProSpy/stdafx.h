@@ -63,7 +63,7 @@ using namespace std;
 #pragma comment(lib,"Psapi.lib")
 
 #include "Utility.h"
-#include <afxcontrolbars.h>
+//#include <afxcontrolbars.h>
 
 
 

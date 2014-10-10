@@ -37,6 +37,8 @@ void CRecordEditDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CRecordEditDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTN_SEL_PROC, &CRecordEditDlg::OnBnClickedBtnSelProc)
 	ON_BN_CLICKED(IDC_BTN_SEL_PATH, &CRecordEditDlg::OnBnClickedBtnSelPath)
+	ON_BN_CLICKED(IDC_BTN_ALL, &CRecordEditDlg::OnBnClickedBtnAll)
+	ON_BN_CLICKED(IDC_BTN_NONE, &CRecordEditDlg::OnBnClickedBtnNone)
 END_MESSAGE_MAP()
 
 
@@ -120,7 +122,7 @@ BOOL CRecordEditDlg::OnInitDialog()
 	{
 		if ((m_ProcInfoList.GetItemData(i) & m_pItem->detail.record.dwMask) !=0 )
 		{
-			m_ProcInfoList.SetCheck(i,TRUE);
+			m_ProcInfoList.SetCheck(i,BST_CHECKED);
 		}
 	}
 
@@ -149,5 +151,23 @@ void CRecordEditDlg::OnBnClickedBtnSelPath()
 	{
 		m_strFilePath = dlg.GetPathName();
 		UpdateData(FALSE);
+	}
+}
+
+void CRecordEditDlg::OnBnClickedBtnAll()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	for (int i=0 ;i<m_ProcInfoList.GetItemCount(); i++)
+	{ 
+		m_ProcInfoList.SetCheck(i,BST_CHECKED); 
+	}
+}
+
+void CRecordEditDlg::OnBnClickedBtnNone()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	for (int i=0 ;i<m_ProcInfoList.GetItemCount(); i++)
+	{ 
+		m_ProcInfoList.SetCheck(i,BST_UNCHECKED); 
 	}
 }
