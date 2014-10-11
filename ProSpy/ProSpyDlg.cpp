@@ -568,6 +568,7 @@ void CProSpyDlg::AddMouseOperation( int x, int y )
 	m_oProj.AddItem(pItem);
 	AddItemToList(pItem);
 }
+
 void CProSpyDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
@@ -575,7 +576,7 @@ void CProSpyDlg::OnSize(UINT nType, int cx, int cy)
 	// TODO: 在此处添加消息处理程序代码
 	if (IsWindow(m_opList.GetSafeHwnd()))
 	{
-		m_opList.SetWindowPos(NULL,0,0,cx-20,cy-110,SWP_NOMOVE);
+		m_opList.SetWindowPos(NULL,0,0,cx-20,cy-105,SWP_NOMOVE);
 	}
 	if (IsWindow(m_cStatic.GetSafeHwnd()))
 	{

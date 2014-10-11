@@ -40,3 +40,14 @@ void CRunTimeDlg::OnOK()
 	UpdateData(TRUE);
 	CDialog::OnOK();
 }
+
+BOOL CRunTimeDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	((CEdit*)GetDlgItem(IDC_EDIT_RUN_TIME))->SetSel(0,-1);
+	((CEdit*)GetDlgItem(IDC_EDIT_RUN_TIME))->SetFocus();
+	return FALSE;  // return TRUE unless you set the focus to a control
+	// 异常: OCX 属性页应返回 FALSE
+}

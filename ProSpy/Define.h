@@ -57,9 +57,12 @@ struct OpRecord
 	TCHAR  szProcessName[PROCESS_NAME_LEN];
 };
 
+#define VISUAL_CHAR_MASK  0x000000   //不按Shift时能打出的可见字符，如‘%’不在此列，
+#define CONTROL_KEY_MASK  0x010000   //表示ctrl、Alt、Shift，这些键需要一直保持按下状态直到其他键释放
+#define VIRTUAL_KEY_MASK  0X020000   //不可见字符，得到的直接是虚拟键值
 struct OpKeyInput
 {
-	DWORD dwKey[KEYINPUT_MAX];
+	DWORD dwKey[KEYINPUT_MAX];  //高位字表示类型，低位字表示虚拟键值
 	void Clear()
 	{
 		memset(dwKey,0,sizeof(DWORD)*KEYINPUT_MAX);

@@ -22,4 +22,6 @@ private:
 	int m_nRunTime;
 protected:
 	virtual void OnOK();
+public:
+	virtual BOOL OnInitDialog();
 };

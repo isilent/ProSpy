@@ -60,11 +60,17 @@ BOOL CKeyEditDlg::OnInitDialog()
 		case VK_MENU:
 			((CButton*)GetDlgItem(IDC_CHK_ALT))->SetCheck(BST_CHECKED);
 			break;
+		case VK_LWIN:
+			((CButton*)GetDlgItem(IDC_CHK_WIN))->SetCheck(BST_CHECKED);
+			break;
 		case VK_DELETE:
 			((CButton*)GetDlgItem(IDC_CHK_DELETE))->SetCheck(BST_CHECKED);
 			break;
-		case VK_PRINT:
+		case VK_SNAPSHOT:
 			((CButton*)GetDlgItem(IDC_CHK_PRINT))->SetCheck(BST_CHECKED);
+			break;
+		case VK_RETURN:
+			((CButton*)GetDlgItem(IDC_CHK_ENTER))->SetCheck(BST_CHECKED);
 			break;
 		default:
 			m_strInput.AppendChar(LOWORD(dwKey));
@@ -101,26 +107,34 @@ void CKeyEditDlg::GetContrlKeys(int &index)
 {
 	if(((CButton*)GetDlgItem(IDC_CHK_CTRL))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_CONTROL | 0x010000; //高位字表示控制键，需要保持按下状态 
+		m_pItem->detail.keyinput.dwKey[index++] = VK_CONTROL | CONTROL_KEY_MASK;
 	}
 	if (((CButton*)GetDlgItem(IDC_CHK_SHIFT))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_SHIFT | 0x010000;
+		m_pItem->detail.keyinput.dwKey[index++] = VK_SHIFT | CONTROL_KEY_MASK;
 	}
 	if (((CButton*)GetDlgItem(IDC_CHK_ALT))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_MENU | 0x010000;
-	}
+		m_pItem->detail.keyinput.dwKey[index++] = VK_MENU | CONTROL_KEY_MASK;
+	}	
+	if (((CButton*)GetDlgItem(IDC_CHK_WIN))->GetCheck() == BST_CHECKED)
+	{
+		m_pItem->detail.keyinput.dwKey[index++] = VK_LWIN | CONTROL_KEY_MASK;
+	} 
 }
 
 void CKeyEditDlg::GetSpecialKeys(int &index)
 {
 	if(((CButton*)GetDlgItem(IDC_CHK_DELETE))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_DELETE; 
+		m_pItem->detail.keyinput.dwKey[index++] = VK_DELETE | VIRTUAL_KEY_MASK; 
 	}
 	if (((CButton*)GetDlgItem(IDC_CHK_PRINT))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_PRINT; 
+		m_pItem->detail.keyinput.dwKey[index++] = VK_SNAPSHOT | VIRTUAL_KEY_MASK; 
+	}
+	if (((CButton*)GetDlgItem(IDC_CHK_ENTER))->GetCheck() == BST_CHECKED)
+	{
+		m_pItem->detail.keyinput.dwKey[index++] = VK_RETURN | VIRTUAL_KEY_MASK; 
 	}
 }

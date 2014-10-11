@@ -120,7 +120,4 @@
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
 </Project>

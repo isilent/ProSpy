@@ -197,23 +197,23 @@ ULONGLONG CRunThread::filetime_2_ull( const FILETIME* ftime )
 void CRunThread::MouseClick( const OpItem* pItem)
 {
 	SetCursorPos(pItem->detail.pos.x,pItem->detail.pos.y);
-	DWORD keydow = 0,keyup = 0; 
+	DWORD keydown = 0,keyup = 0; 
 	 
 	if(pItem->type == OP_LCLICK || pItem->type == OP_DBCICK )
 	{
-		keydow = MOUSEEVENTF_LEFTDOWN;
+		keydown = MOUSEEVENTF_LEFTDOWN;
 		keyup = MOUSEEVENTF_LEFTUP; 
 	} 
 	else if(pItem->type == OP_RCLICK)
 	{
-		keydow = MOUSEEVENTF_RIGHTDOWN;
+		keydown = MOUSEEVENTF_RIGHTDOWN;
 		keyup = MOUSEEVENTF_RIGHTUP;
 	}
-	mouse_event(keydow,0,0,0,0);
+	mouse_event(keydown,0,0,0,0);
 	mouse_event(keyup,0,0,0,0);
 	if (pItem->type == OP_DBCICK)
 	{
-		mouse_event(keydow,0,0,0,0);
+		mouse_event(keydown,0,0,0,0);
 		mouse_event(keyup,0,0,0,0);
 	}
 }
@@ -238,13 +238,20 @@ void CRunThread::KeyInput(const OpItem* pItem)
 		keyup.type = INPUT_KEYBOARD;
 		keyup.ki.dwFlags = KEYEVENTF_KEYUP;
 
-		if((dwKey & 0x010000) == 0x010000) //¿ØÖÆ¼ü
+		if((dwKey & CONTROL_KEY_MASK) == CONTROL_KEY_MASK) //¿ØÖÆ¼ü
 		{ 
 			keydown.ki.wVk = LOWORD(dwKey); 
 			keyup.ki.wVk= keydown.ki.wVk;
 			inputAry.push_back(keydown);
 			releaseAry.push_back(keyup);
 		}  
+		else if((dwKey & VIRTUAL_KEY_MASK) == VIRTUAL_KEY_MASK) //¿ØÖÆ¼ü
+		{
+			keydown.ki.wVk = LOWORD(dwKey); 
+			keyup.ki.wVk = keydown.ki.wVk;
+			inputAry.push_back(keydown);
+			inputAry.push_back(keyup);
+		}
 		else
 		{
 			keydown.ki.wVk = VkKeyScan(LOWORD(dwKey)); 

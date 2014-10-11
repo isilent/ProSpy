@@ -38,8 +38,10 @@
 #define IDC_CHECK6                      1019
 #define IDC_CHK_PRINT                   1019
 #define IDC_BTN_ALL                     1020
-#define IDC_BUTTON2                     1021
 #define IDC_BTN_NONE                    1021
+#define IDC_CHK_ENTER                   1022
+#define IDC_CHECK2                      1023
+#define IDC_CHK_WIN                     1023
 #define ID_HELP_ABOUT                   32771
 #define ID_FILE_NEW32772                32772
 #define ID_FILE_OPEN32773               32773
@@ -59,7 +61,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        137
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

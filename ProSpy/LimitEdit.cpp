@@ -34,11 +34,15 @@ END_MESSAGE_MAP()
 void CLimitEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	if ((nChar == 8)  //8为退格键，BackSpace
-		||((nChar >= 'A')&&(nChar <= 'Z')) 
-		||((nChar>= 'a')&&(nChar <= 'z'))
-		||((nChar>= '0')&&(nChar <='9'))
-		||(nChar == ' '))     
+	if (((nChar >= 'A')&&(nChar <= 'Z')) 
+		||((nChar >= 'a')&&(nChar <= 'z'))
+		||((nChar >= '0')&&(nChar <= '9'))
+		||(nChar == 8)  //8为退格键，BackSpace
+		||(nChar == ' ' || nChar == '-' || nChar == '=')
+		||(nChar == '[' || nChar == ']')
+		||(nChar == ';' || nChar == '.' || nChar == '\'' )
+		||(nChar == '/' || nChar == '\\')
+		)    
 	{ 
 		CEdit::OnChar(nChar, nRepCnt, nFlags);
 	}
