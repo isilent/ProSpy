@@ -31,6 +31,7 @@ protected:
 	CRunThread *m_pThread;
 	CStatic m_cStatic;
 	bool m_bCaptureCursor;
+	HCURSOR m_hCursor;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();

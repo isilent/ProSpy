@@ -125,9 +125,8 @@ BOOL CProSpyDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	ShowWindow(SW_MINIMIZE);
-
 	// TODO: 在此添加额外的初始化代码
+	m_hCursor = GetCursor();
 	BOOL bRet = RegisterHotKey(GetSafeHwnd(),HOTKEY_CAPTURE_MOUSE,MOD_SHIFT|MOD_CONTROL,'1');
 	bRet |= RegisterHotKey(GetSafeHwnd(),HOTKEY_STOP,MOD_SHIFT|MOD_CONTROL,'2');
 	if (!bRet)
@@ -142,7 +141,7 @@ BOOL CProSpyDlg::OnInitDialog()
 	if (m_oProj.Open())
 	{
 		ShowProject();
-	}
+	} 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -418,6 +417,7 @@ void CProSpyDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	{ 
 		SetCapture();
 		m_bCaptureCursor = true;
+		SetCursor(::LoadCursor(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDC_CAPTURE)));
 	}
 	CDialog::OnLButtonDown(nFlags, point);
 }
@@ -432,6 +432,7 @@ void CProSpyDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		GetCursorPos(&pt);
 		AddMouseOperation(pt.x,pt.y); 
 		ReleaseCapture();
+		SetCursor(m_hCursor);
 	}
 	CDialog::OnLButtonUp(nFlags, point);
 }

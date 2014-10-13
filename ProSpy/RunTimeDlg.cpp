@@ -37,7 +37,8 @@ END_MESSAGE_MAP()
 void CRunTimeDlg::OnOK()
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	UpdateData(TRUE);
+	if(!UpdateData(TRUE))
+		return;
 	CDialog::OnOK();
 }
 

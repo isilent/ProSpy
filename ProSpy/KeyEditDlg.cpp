@@ -90,7 +90,8 @@ BOOL CKeyEditDlg::OnInitDialog()
 void CKeyEditDlg::OnOK()
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	UpdateData(TRUE);
+	if(!UpdateData(TRUE))
+		return;
 	m_pItem->detail.keyinput.Clear();
 	int index = 0;
 	GetContrlKeys(index);

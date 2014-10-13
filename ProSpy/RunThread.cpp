@@ -262,10 +262,10 @@ void CRunThread::KeyInput(const OpItem* pItem)
 	}
 	if (!inputAry.empty())
 	{
-		SendInput(inputAry.size(),&inputAry[0],sizeof(INPUT));
+		SendInput((UINT)inputAry.size(),&inputAry[0],sizeof(INPUT));
 	} 
 	if (!releaseAry.empty())
 	{
-		SendInput(releaseAry.size(),&releaseAry[0],sizeof(INPUT));
+		SendInput((UINT)releaseAry.size(),&releaseAry[0],sizeof(INPUT));
 	} 
 }

@@ -148,6 +148,7 @@
     <ResourceCompile Include="ProSpy.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\capture.cur" />
     <None Include="res\ProSpy.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

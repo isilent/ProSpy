@@ -119,5 +119,8 @@
     <None Include="res\ProSpy.rc2">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="res\capture.cur">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

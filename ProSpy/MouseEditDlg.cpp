@@ -41,7 +41,8 @@ END_MESSAGE_MAP()
 void CMouseEditDlg::OnOK()
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	UpdateData(TRUE);
+	if(!UpdateData(TRUE))
+		return;
 	m_pItem->detail.pos.x = m_nX;
 	m_pItem->detail.pos.y = m_nY;
 

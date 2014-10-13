@@ -47,7 +47,8 @@ END_MESSAGE_MAP()
 void CRecordEditDlg::OnOK()
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	UpdateData(TRUE);
+	if(!UpdateData(TRUE))
+		return;
 	if (m_strPID.IsEmpty())
 	{
 		AfxMessageBox(_T("请选择一个进程"));
