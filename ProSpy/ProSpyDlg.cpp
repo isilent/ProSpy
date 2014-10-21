@@ -352,7 +352,7 @@ void CProSpyDlg::OnFileSave()
 void CProSpyDlg::OnFileSaveAs()
 {
 	// TODO: 在此添加命令处理程序代码
-	CFileDialog dlg(FALSE,_T("ps"),NULL,0,_T("AutoGhost Files (*.ps)|*.ps|All Files (*.*)|*.*||"));
+	CFileDialog dlg(FALSE,_T("ps"),NULL,0,_T("ProSpy Files (*.ps)|*.ps|All Files (*.*)|*.*||"));
 	if(dlg.DoModal() != IDOK)
 		return;
 	CString file = dlg.GetPathName();
@@ -364,10 +364,7 @@ void CProSpyDlg::OnFileSaveAs()
 
 void CProSpyDlg::OnEditAddkeyboardevent()
 {
-	// TODO: 在此添加命令处理程序代码
-	short key=VkKeyScan('j');
-	short key2=VkKeyScan('*');
-	short key3=VkKeyScan(' ');
+	// TODO: 在此添加命令处理程序代码 
 	OpItem *pItem = new OpItem;
 	pItem->type = OP_KEY_INPUT; 
 	CKeyEditDlg dlg(pItem);

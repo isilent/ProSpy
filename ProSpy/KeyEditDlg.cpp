@@ -5,6 +5,12 @@
 #include "ProSpy.h"
 #include "KeyEditDlg.h" 
 
+#define GET_SPECIAL_KEY(buttonId,vkey)  \
+	if(((CButton*)GetDlgItem(buttonId))->GetCheck() == BST_CHECKED){\
+	m_pItem->detail.keyinput.dwKey[index++] = vkey | VIRTUAL_KEY_MASK;}
+
+#define SWITCH_KEY_VALUE(vkey,buttonId) \
+	case vkey:{((CButton*)GetDlgItem(buttonId))->SetCheck(BST_CHECKED);break;}
 
 // CKeyEditDlg ¶Ô»°¿ò
 
@@ -51,30 +57,18 @@ BOOL CKeyEditDlg::OnInitDialog()
 			break;
 		switch (LOWORD(dwKey))
 		{
-		case VK_CONTROL:
-			((CButton*)GetDlgItem(IDC_CHK_CTRL))->SetCheck(BST_CHECKED);
-			break;
-		case VK_SHIFT:
-			((CButton*)GetDlgItem(IDC_CHK_SHIFT))->SetCheck(BST_CHECKED);
-			break;
-		case VK_MENU:
-			((CButton*)GetDlgItem(IDC_CHK_ALT))->SetCheck(BST_CHECKED);
-			break;
-		case VK_LWIN:
-			((CButton*)GetDlgItem(IDC_CHK_WIN))->SetCheck(BST_CHECKED);
-			break;
-		case VK_DELETE:
-			((CButton*)GetDlgItem(IDC_CHK_DELETE))->SetCheck(BST_CHECKED);
-			break;
-		case VK_SNAPSHOT:
-			((CButton*)GetDlgItem(IDC_CHK_PRINT))->SetCheck(BST_CHECKED);
-			break;
-		case VK_RETURN:
-			((CButton*)GetDlgItem(IDC_CHK_ENTER))->SetCheck(BST_CHECKED);
-			break;
-		default:
-			m_strInput.AppendChar(LOWORD(dwKey));
-			break;
+			SWITCH_KEY_VALUE(VK_CONTROL,IDC_CHK_CTRL)
+			SWITCH_KEY_VALUE(VK_SHIFT,IDC_CHK_SHIFT)
+			SWITCH_KEY_VALUE(VK_MENU,IDC_CHK_ALT)
+			SWITCH_KEY_VALUE(VK_LWIN,IDC_CHK_WIN)
+			SWITCH_KEY_VALUE(VK_DELETE,IDC_CHK_DELETE)
+			SWITCH_KEY_VALUE(VK_SNAPSHOT,IDC_CHK_SNAPSHOT)
+			SWITCH_KEY_VALUE(VK_RETURN,IDC_CHK_ENTER)
+			SWITCH_KEY_VALUE(VK_PRIOR,IDC_CHK_UP)
+			SWITCH_KEY_VALUE(VK_NEXT,IDC_CHK_DOWN)
+			default:
+				m_strInput.AppendChar(LOWORD(dwKey));
+				break;
 		} 
 	}
 	if (m_pItem->dwTimeSpan >0 )
@@ -125,17 +119,10 @@ void CKeyEditDlg::GetContrlKeys(int &index)
 }
 
 void CKeyEditDlg::GetSpecialKeys(int &index)
-{
-	if(((CButton*)GetDlgItem(IDC_CHK_DELETE))->GetCheck() == BST_CHECKED)
-	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_DELETE | VIRTUAL_KEY_MASK; 
-	}
-	if (((CButton*)GetDlgItem(IDC_CHK_PRINT))->GetCheck() == BST_CHECKED)
-	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_SNAPSHOT | VIRTUAL_KEY_MASK; 
-	}
-	if (((CButton*)GetDlgItem(IDC_CHK_ENTER))->GetCheck() == BST_CHECKED)
-	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_RETURN | VIRTUAL_KEY_MASK; 
-	}
+{ 
+	GET_SPECIAL_KEY(IDC_CHK_DELETE,VK_DELETE)
+	GET_SPECIAL_KEY(IDC_CHK_SNAPSHOT,VK_SNAPSHOT)
+	GET_SPECIAL_KEY(IDC_CHK_ENTER,VK_RETURN)
+	GET_SPECIAL_KEY(IDC_CHK_UP,VK_PRIOR)
+	GET_SPECIAL_KEY(IDC_CHK_DOWN,VK_NEXT)
 }
