@@ -243,7 +243,7 @@ BOOL CProSpyDlg::PreTranslateMessage( MSG* pMsg )
 		{		
 			POINT pt;
 			GetCursorPos(&pt); 
-			AddMouseOperation(pt.x,pt.y);
+			AddMouseOperation(pt.x,pt.y,false);
 			return TRUE;
 		}
 		else if(pMsg->wParam == HOTKEY_STOP)
@@ -380,7 +380,7 @@ void CProSpyDlg::OnEditAddkeyboardevent()
 void CProSpyDlg::OnEditAddmouseevent()
 {
 	// TODO: 在此添加命令处理程序代码
-	AddMouseOperation(0,0);
+	AddMouseOperation(0,0,true);
 }
 
 void CProSpyDlg::OnEditAddresourcerecord()
@@ -427,7 +427,7 @@ void CProSpyDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		m_bCaptureCursor = false;
 		POINT pt;
 		GetCursorPos(&pt);
-		AddMouseOperation(pt.x,pt.y); 
+		AddMouseOperation(pt.x,pt.y,false); 
 		ReleaseCapture();
 		SetCursor(m_hCursor);
 	}
@@ -551,18 +551,23 @@ void CProSpyDlg::OnLvnKeydownList1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-void CProSpyDlg::AddMouseOperation( int x, int y )
+void CProSpyDlg::AddMouseOperation( int x, int y, bool showDlg)
 {
 	OpItem *pItem = new OpItem;
 	pItem->type = OP_LCLICK; //默认左击 
 	pItem->detail.pos.x = x;
 	pItem->detail.pos.y = y;
-	CMouseEditDlg dlg(pItem);
-	if(dlg.DoModal()!=IDOK)
+	pItem->dwTimeSpan = 50;
+	if (showDlg)
 	{
-		delete pItem;
-		return;
-	} 
+		CMouseEditDlg dlg(pItem);
+		if(dlg.DoModal()!=IDOK)
+		{
+			delete pItem;
+			return;
+		} 
+	}
+	
 	m_oProj.AddItem(pItem);
 	AddItemToList(pItem);
 }

@@ -22,7 +22,7 @@ public:
 private:
 	void AddItemToList( OpItem *pItem );
 	void ShowProject();
-	void AddMouseOperation(int x, int y);
+	void AddMouseOperation(int x, int y, bool showDlg);
 // й╣ож
 protected:
 	HICON m_hIcon;
