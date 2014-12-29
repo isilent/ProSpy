@@ -79,11 +79,10 @@ struct OpItem
 		OpKeyInput keyinput;
 	} detail;
 	DWORD dwTimeSpan;
+	TCHAR szNote[64];
 	OpItem()
 	{
-		type = OP_UNKNOWN;
-		dwTimeSpan = 0;
-		memset(&detail,0,sizeof(detail));
+		memset(this,0,sizeof(OpItem));
 	}
 };
 

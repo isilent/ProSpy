@@ -93,6 +93,7 @@ BEGIN_MESSAGE_MAP(CProSpyDlg, CDialog)
 	ON_MESSAGE(WM_THREAD_STOP,&CProSpyDlg::OnThreadStop)
 	ON_NOTIFY(LVN_KEYDOWN, IDC_LIST1, &CProSpyDlg::OnLvnKeydownList1)
 	ON_WM_SIZE()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -135,8 +136,10 @@ BOOL CProSpyDlg::OnInitDialog()
 	}
 	m_opList.SetExtendedStyle(m_opList.GetExtendedStyle()|LVS_EX_FULLROWSELECT); 
 
-	m_opList.InsertColumn(0,_T("操作类型"),LVCFMT_LEFT,160);
-	m_opList.InsertColumn(1,_T("时间间隔(单位10ms)"),LVCFMT_LEFT,160);
+	m_opList.InsertColumn(0,_T("操作类型"),LVCFMT_LEFT,100);
+	m_opList.InsertColumn(1,_T("参数"),LVCFMT_LEFT,140);
+	m_opList.InsertColumn(2,_T("时间间隔(单位10ms)"),LVCFMT_LEFT,140);
+	m_opList.InsertColumn(3,_T("备注"),LVCFMT_LEFT,140);
 
 	if (m_oProj.Open())
 	{
@@ -196,33 +199,9 @@ HCURSOR CProSpyDlg::OnQueryDragIcon()
 
 void CProSpyDlg::AddItemToList( OpItem *pItem )
 {
-	CString strItemName;
-	switch(pItem->type)
-	{
-	case OP_RECORD:
-		strItemName.Format(_T("Record(%s)"),pItem->detail.record.szProcessName); 
-		break;
-	case OP_RCLICK:
-		strItemName.Format(_T("Right Click")); 
-		break;
-	case OP_LCLICK:
-		strItemName.Format(_T("Left Click")); 
-		break;
-	case OP_DBCICK:
-		strItemName.Format(_T("Double Click")); 
-		break;
-	case OP_KEY_INPUT:
-		strItemName.Format(_T("Keyboard Input")); 
-		break;
-	case OP_UNKNOWN:
-		strItemName.Format(_T("Unknown")); 
-		break;
-	} 
-	int nIndex = m_opList.InsertItem(m_opList.GetItemCount(),strItemName);
-	CString strTime;
-	strTime.Format(_T("%u"),pItem->dwTimeSpan);
-	m_opList.SetItemText(nIndex,1,strTime);
+	int nIndex = m_opList.InsertItem(m_opList.GetItemCount(),_T("Item"));
 	m_opList.SetItemData(nIndex,(DWORD_PTR)pItem);
+	UpdateItem(nIndex,pItem);
 }
 
 void CProSpyDlg::ShowProject()
@@ -467,13 +446,43 @@ void CProSpyDlg::OnContextEdit()
 		break;
 	}
 	UpdateItem(index,pItem);
+	m_oProj.Save();
 }
 
 void CProSpyDlg::UpdateItem( int index, OpItem *pItem )
-{
+{ 
+	CString strItemName,strContent;
+	switch(pItem->type)
+	{
+	case OP_RECORD:
+		strItemName.Format(_T("Record")); 
+		strContent.Format(_T("%s(%d)"),pItem->detail.record.szProcessName,pItem->detail.record.dwProcessID);
+		break;
+	case OP_RCLICK:
+		strItemName.Format(_T("Right Click")); 
+		strContent.Format(_T("%d,%d"),pItem->detail.pos.x,pItem->detail.pos.y);
+		break;
+	case OP_LCLICK:
+		strItemName.Format(_T("Left Click")); 
+		strContent.Format(_T("%d,%d"),pItem->detail.pos.x,pItem->detail.pos.y);
+		break;
+	case OP_DBCICK:
+		strItemName.Format(_T("Double Click")); 
+		strContent.Format(_T("%d,%d"),pItem->detail.pos.x,pItem->detail.pos.y);
+		break;
+	case OP_KEY_INPUT:
+		strItemName.Format(_T("Keyboard Input")); 
+		strContent.Format(_T("%s"),pItem->detail.keyinput.dwKey);
+		break;
+	case OP_UNKNOWN:
+		strItemName.Format(_T("Unknown")); 
+		break;
+	} 
 	CString strTime;
-	strTime.Format(_T("%u"),pItem->dwTimeSpan); 
-	m_opList.SetItemText(index,1,strTime);
+	strTime.Format(_T("%u"),pItem->dwTimeSpan);
+	m_opList.SetItemText(index,0,strItemName);
+	m_opList.SetItemText(index,1,strContent);
+	m_opList.SetItemText(index,2,strTime);
 }
 
 void CProSpyDlg::OnContextDelete()
@@ -557,7 +566,7 @@ void CProSpyDlg::AddMouseOperation( int x, int y, bool showDlg)
 	pItem->type = OP_LCLICK; //默认左击 
 	pItem->detail.pos.x = x;
 	pItem->detail.pos.y = y;
-	pItem->dwTimeSpan = 50;
+	pItem->dwTimeSpan = 100;
 	if (showDlg)
 	{
 		CMouseEditDlg dlg(pItem);
@@ -595,4 +604,24 @@ void CProSpyDlg::OnSize(UINT nType, int cx, int cy)
 	{
 		pBtnStop->SetWindowPos(NULL,cx-83,cy-35,0,0,SWP_NOSIZE);
 	}
+}
+
+void CProSpyDlg::OnClose()
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if (m_oProj.IsModified())
+	{
+		int nRet = AfxMessageBox(_T("工程修改后未保存，是否保存"),MB_YESNOCANCEL);
+		if (nRet == IDYES  && !m_oProj.Save())
+		{
+			AfxMessageBox(_T("保存工程失败"));
+			return;
+		}
+		else if (nRet == IDCANCEL)
+		{
+			return;
+		}
+
+	}
+	CDialog::OnClose();
 }

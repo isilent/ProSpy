@@ -15,7 +15,7 @@ CRecordEditDlg::CRecordEditDlg(OpItem *pItem,CWnd* pParent /*=NULL*/)
 	: CDialog(CRecordEditDlg::IDD, pParent)
 	, m_strPID(_T(""))
 	, m_strFilePath(_T("")) 
-	, m_nTimeSpan(50)
+	, m_nTimeSpan(100)
 {
 	m_pItem = pItem;
 }

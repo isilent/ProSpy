@@ -11,7 +11,7 @@ class ProjectFile
 public:
 	ProjectFile();
 
-	void AddItem(OpItem *pItem){m_ItemList.push_back(pItem);}
+	void AddItem(OpItem *pItem);
 
 	void DeleteItem(OpItem *pItem);
 
@@ -27,11 +27,14 @@ public:
 
 	bool IsEmpty(){return m_ItemList.empty();}
 
-	void Discard(){DeleteItems();m_strFileName=L"";}
+	void Discard();
+
+	bool IsModified(){return m_bModified;}
 public:
 	~ProjectFile(void);
 private:
-	void DeleteItems(); 
+	void DeleteItems();
+	bool    m_bModified;
 	CString m_strFileName;
 	list<OpItem*> m_ItemList;
 };

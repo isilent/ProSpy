@@ -3,6 +3,7 @@
 
 ProjectFile::ProjectFile( )
 {
+	m_bModified = false;
 }
 
 ProjectFile::~ProjectFile(void)
@@ -11,7 +12,8 @@ ProjectFile::~ProjectFile(void)
 }
 
 bool ProjectFile::Open( LPCTSTR filename )
-{	 
+{
+	Discard();
 	if (filename != NULL)
 	{
 		m_strFileName = filename;
@@ -66,6 +68,7 @@ bool ProjectFile::Save( LPCTSTR filename /*= NULL*/ )
 		file.Write(*iT,sizeof(OpItem));
 	} 
 	file.Close();
+	m_bModified = false;
 	return true;
 }
 
@@ -92,6 +95,7 @@ void ProjectFile::DeleteItem( OpItem *pItem )
 			break;
 		}
 	}
+	m_bModified =true;
 }
 
 void ProjectFile::MoveUp( OpItem *pItem )
@@ -107,6 +111,7 @@ void ProjectFile::MoveUp( OpItem *pItem )
 			break;
 		}
 	}
+	m_bModified =true;
 }
 
 void ProjectFile::MoveDown( OpItem *pItem )
@@ -121,4 +126,18 @@ void ProjectFile::MoveDown( OpItem *pItem )
 			break;
 		}
 	}
+	m_bModified =true;
+}
+
+void ProjectFile::Discard()
+{
+	DeleteItems();
+	m_strFileName=L"";
+	m_bModified = false;
+}
+
+void ProjectFile::AddItem( OpItem *pItem )
+{
+	m_ItemList.push_back(pItem);
+	m_bModified = true;
 }

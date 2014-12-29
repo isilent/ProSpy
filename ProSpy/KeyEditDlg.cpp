@@ -19,7 +19,7 @@ IMPLEMENT_DYNAMIC(CKeyEditDlg, CDialog)
 CKeyEditDlg::CKeyEditDlg(OpItem *pItem, CWnd* pParent /*=NULL*/)
 	: CDialog(CKeyEditDlg::IDD, pParent)
 	, m_strInput(_T(""))
-	, m_nTimeSpan(50)
+	, m_nTimeSpan(100)
 {
 	m_pItem = pItem;
 }
