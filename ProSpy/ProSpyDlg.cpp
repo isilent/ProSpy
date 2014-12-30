@@ -472,7 +472,7 @@ void CProSpyDlg::UpdateItem( int index, OpItem *pItem )
 		break;
 	case OP_KEY_INPUT:
 		strItemName.Format(_T("Keyboard Input")); 
-		strContent.Format(_T("%s"),pItem->detail.keyinput.dwKey);
+		strContent = GetKeyInput(pItem->detail.keyinput);
 		break;
 	case OP_UNKNOWN:
 		strItemName.Format(_T("Unknown")); 
@@ -624,4 +624,22 @@ void CProSpyDlg::OnClose()
 
 	}
 	CDialog::OnClose();
+}
+
+CString CProSpyDlg::GetKeyInput( const OpKeyInput&input )
+{
+	CString str;
+	for (int i=0;i<KEYINPUT_MAX;i++)
+	{
+		DWORD dwKey = input.dwKey[i];
+		if (dwKey == 0)
+		{
+			break;
+		} 
+		if(HIWORD(dwKey) == (VISIBLE_CHAR_MASK>>4))
+		{
+			str.AppendChar((WORD)input.dwKey[i]);
+		}
+	}
+	return str;
 }

@@ -238,14 +238,15 @@ void CRunThread::KeyInput(const OpItem* pItem)
 		keyup.type = INPUT_KEYBOARD;
 		keyup.ki.dwFlags = KEYEVENTF_KEYUP;
 
-		if((dwKey & CONTROL_KEY_MASK) == CONTROL_KEY_MASK) //¿ØÖÆ¼ü
+		WORD mask = HIWORD(dwKey);
+		if(mask == (CONTROL_KEY_MASK>>4)) //¿ØÖÆ¼ü
 		{ 
 			keydown.ki.wVk = LOWORD(dwKey); 
 			keyup.ki.wVk= keydown.ki.wVk;
 			inputAry.push_back(keydown);
 			releaseAry.push_back(keyup);
 		}  
-		else if((dwKey & VIRTUAL_KEY_MASK) == VIRTUAL_KEY_MASK) //¿ØÖÆ¼ü
+		else if(mask == (VIRTUAL_KEY_MASK>>4)) //ÌØÊâ¼ü
 		{
 			keydown.ki.wVk = LOWORD(dwKey); 
 			keyup.ki.wVk = keydown.ki.wVk;

@@ -28,7 +28,7 @@ public:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();  
 private:
-	void GetContrlKeys(int &index);
+	void GetControlKeys(int &index);
 	void SetContrlKeys(int &index);
 	void GetSpecialKeys(int &index); 
 };

@@ -88,7 +88,7 @@ void CKeyEditDlg::OnOK()
 		return;
 	m_pItem->detail.keyinput.Clear();
 	int index = 0;
-	GetContrlKeys(index);
+	GetControlKeys(index);
 	for (int i=0;i<m_strInput.GetLength();i++)
 	{
 		m_pItem->detail.keyinput.dwKey[index++] = m_strInput.GetAt(i);
@@ -98,7 +98,7 @@ void CKeyEditDlg::OnOK()
 	CDialog::OnOK();
 }
 
-void CKeyEditDlg::GetContrlKeys(int &index)
+void CKeyEditDlg::GetControlKeys(int &index)
 {
 	if(((CButton*)GetDlgItem(IDC_CHK_CTRL))->GetCheck() == BST_CHECKED)
 	{

@@ -23,6 +23,7 @@ private:
 	void AddItemToList( OpItem *pItem );
 	void ShowProject();
 	void AddMouseOperation(int x, int y, bool showDlg);
+	CString GetKeyInput(const OpKeyInput&input);
 // й╣ож
 protected:
 	HICON m_hIcon;
