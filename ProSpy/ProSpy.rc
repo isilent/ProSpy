@@ -13,11 +13,13 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(简体，中国) resources
+// 中文(中华人民共和国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
+#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -184,6 +186,16 @@ BEGIN
     CONTROL         "Page Down",IDC_CHK_DOWN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,67,122,52,10
 END
 
+IDD_DIALOG1 DIALOGEX 0, 0, 217, 64
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Remark"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,40,43,50,14
+    PUSHBUTTON      "取消",IDCANCEL,119,43,50,14
+    EDITTEXT        IDC_EDIT1,7,7,203,24,ES_MULTILINE | ES_AUTOHSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -229,7 +241,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -286,6 +298,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 188
     END
+
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 210
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 57
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -295,7 +315,7 @@ END
 // Menu
 //
 
-IDR_MENU_MAINFRAME MENU
+IDR_MENU_MAINFRAME MENU 
 BEGIN
     POPUP "&File"
     BEGIN
@@ -316,7 +336,7 @@ BEGIN
     END
 END
 
-IDR_MENU_CONTEXT MENU
+IDR_MENU_CONTEXT MENU 
 BEGIN
     POPUP "Context"
     BEGIN
@@ -324,6 +344,7 @@ BEGIN
         MENUITEM "Delete",                      ID_CONTEXT_DELETE
         MENUITEM "Move up",                     ID_CONTEXT_MOVEUP
         MENUITEM "Move down",                   ID_CONTEXT_MOVEDOWN
+        MENUITEM "Add Remark",                  ID_CONTEXT_ADDREMARK
     END
 END
 
@@ -340,13 +361,13 @@ IDC_CAPTURE             CURSOR                  "res\\capture.cur"
 // String Table
 //
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     IDS_ABOUTBOX            "关于 ProSpy(&A)..."
     IDP_SOCKETS_INIT_FAILED "Windows 套接字初始化失败。"
 END
 
-#endif    // 中文(简体，中国) resources
+#endif    // 中文(中华人民共和国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

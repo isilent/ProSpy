@@ -8,6 +8,7 @@
 #include "RecordEditDlg.h"
 #include "MouseEditDlg.h"
 #include "KeyEditDlg.h"
+#include "RemarkDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -94,6 +95,7 @@ BEGIN_MESSAGE_MAP(CProSpyDlg, CDialog)
 	ON_NOTIFY(LVN_KEYDOWN, IDC_LIST1, &CProSpyDlg::OnLvnKeydownList1)
 	ON_WM_SIZE()
 	ON_WM_CLOSE()
+	ON_COMMAND(ID_CONTEXT_ADDREMARK, &CProSpyDlg::OnContextAddremark)
 END_MESSAGE_MAP()
 
 
@@ -483,6 +485,7 @@ void CProSpyDlg::UpdateItem( int index, OpItem *pItem )
 	m_opList.SetItemText(index,0,strItemName);
 	m_opList.SetItemText(index,1,strContent);
 	m_opList.SetItemText(index,2,strTime);
+	m_opList.SetItemText(index,3,pItem->szNote);
 }
 
 void CProSpyDlg::OnContextDelete()
@@ -642,4 +645,22 @@ CString CProSpyDlg::GetKeyInput( const OpKeyInput&input )
 		}
 	}
 	return str;
+}
+
+void CProSpyDlg::OnContextAddremark()
+{
+	// TODO: 在此添加命令处理程序代码
+	POSITION pos = m_opList.GetFirstSelectedItemPosition();
+	int index = m_opList.GetNextSelectedItem(pos);
+	if(index<0)
+		return;
+	OpItem * pItem = (OpItem*)m_opList.GetItemData(index); 
+	CRemarkDlg dlg;
+	dlg.m_strRemark = pItem->szNote;
+	INT_PTR nRet = dlg.DoModal();
+	if (nRet == IDOK)
+	{
+		wcscpy_s(pItem->szNote,64,dlg.m_strRemark.GetBuffer());
+	}
+	UpdateItem(index,pItem);
 }

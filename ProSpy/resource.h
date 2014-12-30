@@ -17,6 +17,7 @@
 #define IDD_DLG_ENUM_PROC               134
 #define IDD_DLG_MOUSE                   135
 #define IDD_DLG_KEYBOARD                136
+#define IDD_DIALOG1                     138
 #define IDC_LIST1                       1000
 #define ID_BTN_START                    1001
 #define ID_BTN_STOP                     1002
@@ -37,7 +38,7 @@
 #define IDC_CHK_ALT                     1016
 #define IDC_CHK_DELETE                  1018
 #define IDC_CHECK6                      1019
-#define IDC_CHK_SNAPSHOT                   1019
+#define IDC_CHK_SNAPSHOT                1019
 #define IDC_BTN_ALL                     1020
 #define IDC_BTN_NONE                    1021
 #define IDC_CHK_ENTER                   1022
@@ -57,13 +58,14 @@
 #define ID_CONTEXT_DELETE               32780
 #define ID_CONTEXT_MOVEUP               32781
 #define ID_CONTEXT_MOVEDOWN             32782
+#define ID_CONTEXT_ADDREMARK            32783
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NEXT_RESOURCE_VALUE        139
+#define _APS_NEXT_COMMAND_VALUE         32784
 #define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
