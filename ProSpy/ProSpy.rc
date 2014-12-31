@@ -78,7 +78,7 @@ CAPTION "关于 ProSpy"
 FONT 9, "宋体", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "ProSpy 1.0 版",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "ProSpy 1.1 版",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2014",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "确定",IDOK,169,7,50,16,WS_GROUP
     LTEXT           "Process Spy",IDC_STATIC,40,46,45,8
@@ -186,7 +186,7 @@ BEGIN
     CONTROL         "Page Down",IDC_CHK_DOWN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,67,122,52,10
 END
 
-IDD_DIALOG1 DIALOGEX 0, 0, 217, 64
+IDD_DLG_REMARK DIALOGEX 0, 0, 217, 64
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Remark"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -203,8 +203,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,1,0,1
+ PRODUCTVERSION 1,1,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -220,12 +220,12 @@ BEGIN
         BLOCK "080403a8"
         BEGIN
             VALUE "FileDescription", "Process Spy"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "1.1.0.1"
             VALUE "InternalName", "ProSpy.exe"
             VALUE "LegalCopyright", " CopyRight (C) 2014."
             VALUE "OriginalFilename", "ProSpy.exe"
             VALUE "ProductName", "ProSpy"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductVersion", "1.1.0.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -299,7 +299,7 @@ BEGIN
         BOTTOMMARGIN, 188
     END
 
-    IDD_DIALOG1, DIALOG
+    IDD_DLG_REMARK, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 210

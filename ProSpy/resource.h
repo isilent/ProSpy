@@ -18,6 +18,7 @@
 #define IDD_DLG_MOUSE                   135
 #define IDD_DLG_KEYBOARD                136
 #define IDD_DIALOG1                     138
+#define IDD_DLG_REMARK                  138
 #define IDC_LIST1                       1000
 #define ID_BTN_START                    1001
 #define ID_BTN_STOP                     1002
