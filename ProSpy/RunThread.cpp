@@ -41,7 +41,8 @@ unsigned int __stdcall Run( PVOID pParam )
 			default:
 				break;
 			}
-			Sleep((*iT)->dwTimeSpan *10);
+			if(!pThread->TrySleep((*iT)->dwTimeSpan *10))
+				break;
 		} 
 		pThread->m_nCount++;
 	}
@@ -271,4 +272,17 @@ void CRunThread::KeyInput(const OpItem* pItem)
 	{
 		SendInput((UINT)releaseAry.size(),&releaseAry[0],sizeof(INPUT));
 	} 
+}
+
+bool CRunThread::TrySleep(DWORD dwTimeSpan)
+{
+	//超过1s的sleep分成多次，加快终止操作时的响应速度
+	int count = dwTimeSpan / 1000;
+	int remainder = dwTimeSpan % 1000;
+	Sleep(remainder);
+	while(m_bRunning && count-->0)
+	{
+		Sleep(1000); 
+	}
+	return m_bRunning;
 }
