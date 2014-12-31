@@ -344,7 +344,7 @@ BEGIN
         MENUITEM "Delete",                      ID_CONTEXT_DELETE
         MENUITEM "Move up",                     ID_CONTEXT_MOVEUP
         MENUITEM "Move down",                   ID_CONTEXT_MOVEDOWN
-        MENUITEM "Add Remark",                  ID_CONTEXT_ADDREMARK
+        MENUITEM "Edit Remark",                 ID_CONTEXT_ADDREMARK
     END
 END
 

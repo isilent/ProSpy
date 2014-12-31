@@ -3,9 +3,9 @@
 
 class CRunThread
 {
+	friend unsigned int __stdcall Run(PVOID pParam);
 public:
 	CRunThread(const HWND &hwnd, const list<OpItem*> &itemList);
-public:
 	~CRunThread(void);
 
 	void Start(int nRunCount);
@@ -22,7 +22,6 @@ protected:
 	int  m_nMaxCount;
 	HWND m_hMainWnd;
 private:
-	friend unsigned int __stdcall Run(PVOID pParam);
 	static ULONGLONG filetime_2_ull(const FILETIME* ftime);
  
 	HANDLE m_hThread;

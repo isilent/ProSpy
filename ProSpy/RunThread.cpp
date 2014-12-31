@@ -60,6 +60,8 @@ void CRunThread::Stop()
 {
 	m_bRunning = false;
 	WaitForSingleObject(m_hThread,INFINITE); 
+	CloseHandle(m_hThread);
+	m_hThread = NULL;
 }
 
 void CRunThread::Record( const OpRecord &op )
