@@ -1,5 +1,6 @@
 #pragma once
 #include "Define.h"
+#include "CPUCalculator.h"
 
 class CRunThread
 {
@@ -25,6 +26,7 @@ protected:
 private:
 	static ULONGLONG filetime_2_ull(const FILETIME* ftime);
  
+	CCPUCalculator m_calc;
 	HANDLE m_hThread;
 	CStdioFile m_file;
 };

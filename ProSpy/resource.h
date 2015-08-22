@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by ProSpy.rc
+// Microsoft Visual C++ 生成的包含文件。
+// 供 ProSpy.rc 使用
 //
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
@@ -17,7 +17,6 @@
 #define IDD_DLG_ENUM_PROC               134
 #define IDD_DLG_MOUSE                   135
 #define IDD_DLG_KEYBOARD                136
-#define IDD_DIALOG1                     138
 #define IDD_DLG_REMARK                  138
 #define IDC_LIST1                       1000
 #define ID_BTN_START                    1001
@@ -60,13 +59,20 @@
 #define ID_CONTEXT_MOVEUP               32781
 #define ID_CONTEXT_MOVEDOWN             32782
 #define ID_CONTEXT_ADDREMARK            32783
+#define ID_CONTEXT_COPY                 32784
+#define ID_CONTEXT_PASTE                32785
+#define ID_CONTEXT_CUT                  32786
+#define ID_CONTEXT_MOVE                 32787
+#define ID_CONTEXT_MOVEDOWN32788        32788
+#define ID_CONTEXT_UP                   32789
+#define ID_CONTEXT_DOWN                 32790
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
-#define _APS_NEXT_COMMAND_VALUE         32784
+#define _APS_NEXT_COMMAND_VALUE         32791
 #define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

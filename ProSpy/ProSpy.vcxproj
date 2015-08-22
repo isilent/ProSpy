@@ -14,6 +14,7 @@
     <ProjectGuid>{A7589B86-AC58-4220-B451-228D32A9A444}</ProjectGuid>
     <RootNamespace>ProSpy</RootNamespace>
     <Keyword>MFCProj</Keyword>
+    <ProjectName>ProcSpy</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -25,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -108,10 +109,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CPUCalculator.cpp" />
     <ClCompile Include="KeyEditDlg.cpp" />
     <ClCompile Include="LimitEdit.cpp" />
     <ClCompile Include="MouseEditDlg.cpp" />
     <ClCompile Include="ProSpy.cpp" />
+    <ClCompile Include="RemarkDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -125,10 +128,12 @@
     <ClCompile Include="RunTimeDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CPUCalculator.h" />
     <ClInclude Include="KeyEditDlg.h" />
     <ClInclude Include="LimitEdit.h" />
     <ClInclude Include="MouseEditDlg.h" />
     <ClInclude Include="ProSpy.h" />
+    <ClInclude Include="RemarkDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Define.h" />

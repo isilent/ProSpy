@@ -46,6 +46,7 @@ unsigned int __stdcall Run( PVOID pParam )
 		} 
 		pThread->m_nCount++;
 	}
+	pThread->m_calc.Stop();
 	PostMessage(pThread->m_hMainWnd,WM_THREAD_STOP,(WPARAM)pThread->m_nCount,0);
 	return 0;
 }
@@ -53,7 +54,15 @@ unsigned int __stdcall Run( PVOID pParam )
 void CRunThread::Start(int nRunCount)
 {
 	m_nMaxCount = nRunCount;
-	m_bRunning = true;
+	m_bRunning = true; 
+	for (auto ptr : m_ItemList)
+	{
+		if (ptr->type == OP_RECORD && (ptr->detail.record.dwMask & (RECORD_CPU_TIME_KERNEL | RECORD_CPU_TIME_USER)))
+		{
+			m_calc.AddProcessID(ptr->detail.record.dwProcessID);
+		}
+	}
+	m_calc.Start();
 	m_hThread = (HANDLE)_beginthreadex(NULL,0,Run,this,0,NULL);
 }
 

@@ -57,6 +57,12 @@
     <ClCompile Include="LimitEdit.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="RemarkDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUCalculator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProSpy.h">
@@ -100,6 +106,12 @@
     </ClInclude>
     <ClInclude Include="LimitEdit.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="RemarkDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CPUCalculator.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

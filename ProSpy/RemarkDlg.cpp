@@ -47,6 +47,7 @@ BOOL CRemarkDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 	UpdateData(FALSE);
+	GetDlgItem(IDC_EDIT1)->SetFocus();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
 }

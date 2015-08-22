@@ -15,7 +15,7 @@ public:
 
 	void DeleteItem(OpItem *pItem);
 
-	void MoveUp(OpItem *pItem);
+	bool MoveUp(int nFirstIndex, int nCount);
 
 	void MoveDown(OpItem *pItem);
 

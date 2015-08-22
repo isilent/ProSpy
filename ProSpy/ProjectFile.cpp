@@ -98,20 +98,35 @@ void ProjectFile::DeleteItem( OpItem *pItem )
 	m_bModified =true;
 }
 
-void ProjectFile::MoveUp( OpItem *pItem )
+bool ProjectFile::MoveUp(int nFirstIndex, int nCount)
 {
+	if (nFirstIndex <=0)
+	{
+		return false;
+	}
+	int index = 0;  
+	list<OpItem*>::iterator itPre; 
 	for(list<OpItem*>::iterator iT = m_ItemList.begin(); iT != m_ItemList.end();iT++)
 	{
-		if (*iT == pItem)
-		{ 
-			list<OpItem*>::iterator itPre = iT;
+		if (index == nFirstIndex)
+		{
+			itPre = iT;
 			--itPre;
-			m_ItemList.erase(iT);
-			m_ItemList.insert(itPre,pItem);
+		}
+		if (index == nFirstIndex+nCount)
+		{
+			m_ItemList.insert(iT, *itPre);
 			break;
 		}
+		index++;
 	}
+	if (index == m_ItemList.size())
+	{
+		m_ItemList.push_back(*itPre);
+	}
+	m_ItemList.erase(itPre); 
 	m_bModified =true;
+	return true;
 }
 
 void ProjectFile::MoveDown( OpItem *pItem )

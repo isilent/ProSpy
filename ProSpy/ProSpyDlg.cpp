@@ -96,6 +96,8 @@ BEGIN_MESSAGE_MAP(CProSpyDlg, CDialog)
 	ON_WM_SIZE()
 	ON_WM_CLOSE()
 	ON_COMMAND(ID_CONTEXT_ADDREMARK, &CProSpyDlg::OnContextAddremark)
+	ON_COMMAND(ID_CONTEXT_COPY, &CProSpyDlg::OnContextCopy) 
+	ON_COMMAND(ID_CONTEXT_PASTE, &CProSpyDlg::OnContextPaste)
 END_MESSAGE_MAP()
 
 
@@ -134,14 +136,14 @@ BOOL CProSpyDlg::OnInitDialog()
 	bRet |= RegisterHotKey(GetSafeHwnd(),HOTKEY_STOP,MOD_SHIFT|MOD_CONTROL,'2');
 	if (!bRet)
 	{
-		AfxMessageBox(_T("Failed to set shortcut key"));
+		AfxMessageBox(_T("Failed to register hotkey"));
 	}
-	m_opList.SetExtendedStyle(m_opList.GetExtendedStyle()|LVS_EX_FULLROWSELECT); 
+	m_opList.SetExtendedStyle(m_opList.GetExtendedStyle()|LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES); 
 
-	m_opList.InsertColumn(0,_T("操作类型"),LVCFMT_LEFT,100);
-	m_opList.InsertColumn(1,_T("参数"),LVCFMT_LEFT,140);
-	m_opList.InsertColumn(2,_T("时间间隔(单位10ms)"),LVCFMT_LEFT,140);
-	m_opList.InsertColumn(3,_T("备注"),LVCFMT_LEFT,140);
+	m_opList.InsertColumn(0,_T("Operation"),LVCFMT_LEFT,100);
+	m_opList.InsertColumn(1,_T("Parameter"),LVCFMT_LEFT,140);
+	m_opList.InsertColumn(2,_T("Interval(ms)"),LVCFMT_LEFT,100);
+	m_opList.InsertColumn(3,_T("Note"),LVCFMT_LEFT,140);
 
 	if (m_oProj.Open())
 	{
@@ -496,7 +498,7 @@ void CProSpyDlg::OnContextDelete()
 	while(pos != NULL)
 	{
 		int index = m_opList.GetNextSelectedItem(pos); 
-		maxIndex = max(maxIndex,index);
+		maxIndex = index;
 		OpItem * pItem = (OpItem*)m_opList.GetItemData(index);
 		m_oProj.DeleteItem(pItem); 
 	}
@@ -508,13 +510,27 @@ void CProSpyDlg::OnContextMoveup()
 {
 	// TODO: 在此添加命令处理程序代码
 	POSITION pos = m_opList.GetFirstSelectedItemPosition();
-	int index = m_opList.GetNextSelectedItem(pos);
-	if(index<=0)
+	int firstIndex = 0;
+	int nCount = 0;
+	if (pos == NULL)
+	{
 		return;
-	OpItem * pItem = (OpItem*)m_opList.GetItemData(index); 
-	m_oProj.MoveUp(pItem);
-	ShowProject(); 
-	m_opList.SetItemState(index-1, LVIS_SELECTED, LVIS_SELECTED); 
+	}
+	firstIndex = m_opList.GetNextSelectedItem(pos);
+	nCount = 1; 
+	while (pos != NULL)
+	{
+		int index = m_opList.GetNextSelectedItem(pos);
+		nCount++;
+	} 
+	if (m_oProj.MoveUp(firstIndex, nCount))
+	{
+		ShowProject();
+		for (int i = 0; i < nCount; i++)
+		{
+			m_opList.SetItemState(firstIndex + i - 1, LVIS_SELECTED, LVIS_SELECTED);
+		}
+	}
 }
 
 void CProSpyDlg::OnContextMovedown()
@@ -663,4 +679,15 @@ void CProSpyDlg::OnContextAddremark()
 		wcscpy_s(pItem->szNote,64,dlg.m_strRemark.GetBuffer());
 	}
 	UpdateItem(index,pItem);
+}
+
+
+void CProSpyDlg::OnContextCopy()
+{
+	// TODO:  在此添加命令处理程序代码
+}
+
+void CProSpyDlg::OnContextPaste()
+{
+	// TODO:  在此添加命令处理程序代码
 }
