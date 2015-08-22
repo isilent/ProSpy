@@ -1,32 +1,32 @@
 #pragma once
+#include <thread>
+#include <memory>
 #include "Define.h"
 #include "CPUCalculator.h"
 
+using namespace std;
+
 class CRunThread
 {
-	friend unsigned int __stdcall Run(PVOID pParam);
 public:
-	CRunThread(const HWND &hwnd, const list<OpItem*> &itemList);
+	CRunThread(const HWND &hwnd, const OpItemList &itemList);
 	~CRunThread(void);
 
 	void Start(int nRunCount);
 
 	void Stop();
- 
-protected:
+
+private:
+	void Run();
 	void Record(const OpRecord &op);
-	void MouseClick(const OpItem* pItem);
-	void KeyInput(const OpItem* pItem);
+	void MouseClick(LPITEM pItem);
+	void KeyInput(const OpKeyInput &key);
 	bool TrySleep(DWORD dwTimeSpan);
-	list<OpItem*> m_ItemList;
-	volatile bool m_bRunning;
-	int  m_nCount;
+
+	CPUCalculator m_calc;
+	OpItemList m_ItemList;
+	volatile bool m_bRunning =false;
 	int  m_nMaxCount;
 	HWND m_hMainWnd;
-private:
-	static ULONGLONG filetime_2_ull(const FILETIME* ftime);
- 
-	CCPUCalculator m_calc;
-	HANDLE m_hThread;
-	CStdioFile m_file;
+	shared_ptr<thread> m_pThread = nullptr;
 };

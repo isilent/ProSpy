@@ -5,17 +5,19 @@
 
 using namespace std;
 
+#define UPDATE_INTERVAL 1000
+
 struct CPURatio
 {
 	ULONGLONG lastCPUTime;
 	float fRatio;
 };
 
-class CCPUCalculator
+class CPUCalculator
 {
 public:
-	CCPUCalculator();
-	~CCPUCalculator();
+	CPUCalculator();
+	~CPUCalculator();
 	void AddProcessID(DWORD pid);
 	void Start();
 	void Update();
@@ -26,7 +28,7 @@ private:
 	HANDLE m_hTimerQueue;
 	HANDLE m_hTimer;
 	mutex m_mutex;
-	DWORD m_dwProcessorNum = 1;
+	DWORD m_dwCycleTime = UPDATE_INTERVAL;
 	unordered_map<DWORD, shared_ptr<CPURatio>> m_mapRatio;
 };
 

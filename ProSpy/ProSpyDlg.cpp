@@ -9,6 +9,7 @@
 #include "MouseEditDlg.h"
 #include "KeyEditDlg.h"
 #include "RemarkDlg.h"
+#include "RegEdit.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,7 +58,6 @@ CProSpyDlg::CProSpyDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CProSpyDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	m_pThread = NULL;
 	m_bCaptureCursor =false;
 }
 
@@ -145,11 +145,17 @@ BOOL CProSpyDlg::OnInitDialog()
 	m_opList.InsertColumn(2,_T("Interval(ms)"),LVCFMT_LEFT,100);
 	m_opList.InsertColumn(3,_T("Note"),LVCFMT_LEFT,140);
 
-	if (m_oProj.Open())
+	CString strFile;
+	if (CRegEdit::ReadValue(HKEY_LOCAL_MACHINE,REG_PATH_APP, REG_ITEM_RUNFILE, strFile))
 	{
-		ShowProject();
-	} 
-	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
+		m_oProj.Open(strFile);
+	}
+	else
+	{
+		m_oProj.Open();
+	}
+	ShowProject(); 
+	return TRUE;
 }
 
 void CProSpyDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -201,7 +207,7 @@ HCURSOR CProSpyDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CProSpyDlg::AddItemToList( OpItem *pItem )
+void CProSpyDlg::AddItemToList(LPITEM pItem)
 {
 	int nIndex = m_opList.InsertItem(m_opList.GetItemCount(),_T("Item"));
 	m_opList.SetItemData(nIndex,(DWORD_PTR)pItem);
@@ -210,11 +216,12 @@ void CProSpyDlg::AddItemToList( OpItem *pItem )
 
 void CProSpyDlg::ShowProject()
 {
+	UpdateTitle();
 	m_opList.DeleteAllItems();
-	list<OpItem*> &itemList = m_oProj.GetItemList();
-	for(list<OpItem*>::iterator iT = itemList.begin(); iT != itemList.end();iT++)
+	auto &itemList = m_oProj.GetItemList();
+	for(auto item:itemList)
 	{
-		AddItemToList(*iT);
+		AddItemToList(item);
 	}
 }
 
@@ -241,12 +248,12 @@ BOOL CProSpyDlg::PreTranslateMessage( MSG* pMsg )
 void CProSpyDlg::OnBnClickedBtnStart()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_pThread != NULL)
+	if (m_pThread != nullptr)
 	{
 		AfxMessageBox(_T("Already Running"));
 		return;
 	}
-	list<OpItem*> &oplist = m_oProj.GetItemList();
+	auto &oplist = m_oProj.GetItemList();
 	if (oplist.empty())
 	{
 		AfxMessageBox(_T("Project is empty"));
@@ -258,7 +265,7 @@ void CProSpyDlg::OnBnClickedBtnStart()
 		return;
 	}
 	m_oProj.Save();
-	m_pThread = new CRunThread(GetSafeHwnd(),oplist);
+	m_pThread = make_shared<CRunThread>(GetSafeHwnd(),oplist);
 	m_pThread->Start(dlg.GetRunTime());
 	GetDlgItem(ID_BTN_START)->EnableWindow(FALSE);
 	ShowWindow(SW_MINIMIZE);
@@ -267,7 +274,7 @@ void CProSpyDlg::OnBnClickedBtnStart()
 void CProSpyDlg::OnBnClickedBtnStop()
 {
 	// TODO: 在此添加控件通知处理程序代码 
-	if (m_pThread !=NULL)
+	if (m_pThread !=nullptr)
 	{
 		m_pThread->Stop(); 
 	}
@@ -299,17 +306,17 @@ void CProSpyDlg::OnFileNew()
 	// TODO: 在此添加命令处理程序代码
 	if (!m_oProj.IsEmpty() && !m_oProj.Save())
 	{
-		if(MessageBox(_T("保存工程失败,是否放弃当前工程"),_T("Message"),MB_YESNO) != IDYES)
+		if(MessageBox(_T("Save Project failed,Do you want to discard it?"),_T("Warnning"),MB_YESNO) != IDYES)
 			return;
 	}
-	m_oProj.Discard();
+	m_oProj.Destroy();
 	ShowProject();
 }
 
 void CProSpyDlg::OnFileOpen()
 {
 	// TODO: 在此添加命令处理程序代码
-	CFileDialog dlg(TRUE,_T("ps"),NULL,0,_T("AutoGhost Files (*.ps)|*.ps|All Files (*.*)|*.*||"));
+	CFileDialog dlg(TRUE,_T("ps"),NULL,0,_T("ProcSpy Files (*.ps)|*.ps|All Files (*.*)|*.*||"));
 	if(dlg.DoModal() != IDOK)
 		return;
 	CString file = dlg.GetPathName();
@@ -319,7 +326,7 @@ void CProSpyDlg::OnFileOpen()
 	}
 	else
 	{
-		AfxMessageBox(_T("打开工程失败"));
+		AfxMessageBox(_T("Open project failed"));
 	}
 }
 
@@ -328,8 +335,9 @@ void CProSpyDlg::OnFileSave()
 	// TODO: 在此添加命令处理程序代码	
 	if(!m_oProj.Save())
 	{
-		AfxMessageBox(_T("保存工程失败"));
+		AfxMessageBox(_T("Save project failed")); 
 	}
+	UpdateTitle();
 }
 
 void CProSpyDlg::OnFileSaveAs()
@@ -341,23 +349,24 @@ void CProSpyDlg::OnFileSaveAs()
 	CString file = dlg.GetPathName();
 	if (!m_oProj.Save(file))
 	{ 
-		AfxMessageBox(_T("保存工程失败"));
+		AfxMessageBox(_T("Save project failed"));
 	}
+	UpdateTitle();
 }
 
 void CProSpyDlg::OnEditAddkeyboardevent()
 {
 	// TODO: 在此添加命令处理程序代码 
-	OpItem *pItem = new OpItem;
-	pItem->type = OP_KEY_INPUT; 
+	auto pItem = new OpItem;
+	pItem->type = OP_KEY_INPUT;
+	pItem->dwTimeSpan = DEFAULT_INTERVAL;
 	CKeyEditDlg dlg(pItem);
 	if(dlg.DoModal()!=IDOK)
 	{
 		delete pItem;
 		return;
 	} 
-	m_oProj.AddItem(pItem);
-	AddItemToList(pItem);
+	AddItem(pItem);
 }
 
 void CProSpyDlg::OnEditAddmouseevent()
@@ -369,17 +378,17 @@ void CProSpyDlg::OnEditAddmouseevent()
 void CProSpyDlg::OnEditAddresourcerecord()
 {
 	// TODO: 在此添加命令处理程序代码
-	OpItem *pItem = new OpItem;
+	auto pItem = new OpItem;
 	pItem->type = OP_RECORD;
-	pItem->detail.record.dwMask = RECORD_PID | RECORD_VIRTUAL_MEM | RECORD_HANDLE_COUNT;
+	pItem->dwTimeSpan = DEFAULT_INTERVAL;
+	pItem->detail.record.dwMask = RECORD_PID | RECORD_CPU_USAGE | RECORD_VIRTUAL_MEM | RECORD_HANDLE_COUNT;
  	CRecordEditDlg dlg(pItem);
  	if(dlg.DoModal()!=IDOK)
  	{
- 		delete pItem;
+		delete pItem;
  		return;
- 	} 
- 	m_oProj.AddItem(pItem);
- 	AddItemToList(pItem);
+	}
+	AddItem(pItem);
 }
 
 void CProSpyDlg::OnHelpAbout()
@@ -425,35 +434,39 @@ void CProSpyDlg::OnContextEdit()
 	if(index<0)
 		return;
 	OpItem * pItem = (OpItem*)m_opList.GetItemData(index);
+	bool bModified = false;
 	switch(pItem->type)
 	{
 	case OP_RECORD:
 		{
 			CRecordEditDlg dlg(pItem);
-			dlg.DoModal();
+			bModified = (dlg.DoModal() == IDOK);
 			break;
 		}
 	case OP_LCLICK:
 	case OP_RCLICK:
 	case OP_DBCICK:
 		{
-			CMouseEditDlg dlg(pItem);
-		 	dlg.DoModal();
+		    CMouseEditDlg dlg(pItem);
+			bModified = (dlg.DoModal() == IDOK);
 			break;
 		}
 	case OP_KEY_INPUT:
 		{
 			CKeyEditDlg dlg(pItem);
-			dlg.DoModal();
+			bModified = (dlg.DoModal() == IDOK);
 			break;
 		}
 		break;
 	}
 	UpdateItem(index,pItem);
-	m_oProj.Save();
+	if (bModified)
+	{
+		m_oProj.SetModified();
+	}
 }
 
-void CProSpyDlg::UpdateItem( int index, OpItem *pItem )
+void CProSpyDlg::UpdateItem(int index, LPITEM pItem)
 { 
 	CString strItemName,strContent;
 	switch(pItem->type)
@@ -503,21 +516,19 @@ void CProSpyDlg::OnContextDelete()
 		m_oProj.DeleteItem(pItem); 
 	}
 	ShowProject();
-	m_opList.SetItemState(maxIndex+1, LVIS_SELECTED, LVIS_SELECTED);
+	m_opList.SetItemState(maxIndex, LVIS_SELECTED, LVIS_SELECTED);
 }
 
 void CProSpyDlg::OnContextMoveup()
 {
 	// TODO: 在此添加命令处理程序代码
 	POSITION pos = m_opList.GetFirstSelectedItemPosition();
-	int firstIndex = 0;
-	int nCount = 0;
 	if (pos == NULL)
 	{
 		return;
-	}
-	firstIndex = m_opList.GetNextSelectedItem(pos);
-	nCount = 1; 
+	} 
+	int firstIndex = m_opList.GetNextSelectedItem(pos); 
+	int nCount = 1; 
 	while (pos != NULL)
 	{
 		int index = m_opList.GetNextSelectedItem(pos);
@@ -535,28 +546,40 @@ void CProSpyDlg::OnContextMoveup()
 
 void CProSpyDlg::OnContextMovedown()
 {
-	// TODO: 在此添加命令处理程序代码
+	// TODO: 在此添加命令处理程序代码 
 	POSITION pos = m_opList.GetFirstSelectedItemPosition();
-	int index = m_opList.GetNextSelectedItem(pos);
-	if(index<0 || (index == m_opList.GetItemCount()-1))
+	if (pos == NULL)
+	{
 		return;
-	OpItem * pItem = (OpItem*)m_opList.GetItemData(index); 
-	m_oProj.MoveDown(pItem);
-	ShowProject();      
-	m_opList.SetItemState(index+1, LVIS_SELECTED, LVIS_SELECTED);  
+	}
+	int firstIndex = m_opList.GetNextSelectedItem(pos);
+	int nCount = 1;
+	while (pos != NULL)
+	{
+		int index = m_opList.GetNextSelectedItem(pos);
+		nCount++;
+	}
+	if (m_oProj.MoveDown(firstIndex, nCount))
+	{
+		ShowProject();
+		for (int i = 0; i < nCount; i++)
+		{
+			m_opList.SetItemState(firstIndex + i + 1, LVIS_SELECTED, LVIS_SELECTED);
+		}
+	}
 }
 
 LRESULT CProSpyDlg::OnThreadStop( WPARAM wparam,LPARAM lparam )
 { 
+	ShowWindow(SW_NORMAL);
 	GetDlgItem(ID_BTN_START)->EnableWindow(TRUE);
 	CString str;
-	str.Format(_T("已成功执行%d次"),(int)wparam);
-	AfxMessageBox(str);
-	if (m_pThread != NULL)
+	str.Format(_T("Run %d times successfully"), (int)wparam);
+	if (m_pThread != nullptr)
 	{
-		delete m_pThread;
-		m_pThread = NULL;
+		m_pThread.reset(); 
 	}
+	AfxMessageBox(str);
 	return TRUE;
 }
 
@@ -576,6 +599,14 @@ void CProSpyDlg::OnLvnKeydownList1(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		OnContextDelete();
 	}
+	else if (pLVKeyDow->wVKey == 'C' && (GetAsyncKeyState(VK_CONTROL)))
+	{
+		OnContextCopy();
+	}
+	else if (pLVKeyDow->wVKey == 'V' && (GetAsyncKeyState(VK_CONTROL)))
+	{
+		OnContextPaste();
+	}
 	*pResult = 0;
 }
 
@@ -585,7 +616,7 @@ void CProSpyDlg::AddMouseOperation( int x, int y, bool showDlg)
 	pItem->type = OP_LCLICK; //默认左击 
 	pItem->detail.pos.x = x;
 	pItem->detail.pos.y = y;
-	pItem->dwTimeSpan = 100;
+	pItem->dwTimeSpan = DEFAULT_INTERVAL;
 	if (showDlg)
 	{
 		CMouseEditDlg dlg(pItem);
@@ -595,9 +626,8 @@ void CProSpyDlg::AddMouseOperation( int x, int y, bool showDlg)
 			return;
 		} 
 	}
-	
-	m_oProj.AddItem(pItem);
-	AddItemToList(pItem);
+	AddItem(pItem);
+
 }
 
 void CProSpyDlg::OnSize(UINT nType, int cx, int cy)
@@ -630,10 +660,10 @@ void CProSpyDlg::OnClose()
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if (m_oProj.IsModified())
 	{
-		int nRet = AfxMessageBox(_T("工程修改后未保存，是否保存"),MB_YESNOCANCEL);
+		int nRet = AfxMessageBox(_T("Project is modified,Save it?"),MB_YESNOCANCEL);
 		if (nRet == IDYES  && !m_oProj.Save())
 		{
-			AfxMessageBox(_T("保存工程失败"));
+			AfxMessageBox(_T("Save Project failed"));
 			return;
 		}
 		else if (nRet == IDCANCEL)
@@ -642,6 +672,7 @@ void CProSpyDlg::OnClose()
 		}
 
 	}
+	m_oProj.Destroy();
 	CDialog::OnClose();
 }
 
@@ -655,7 +686,47 @@ CString CProSpyDlg::GetKeyInput( const OpKeyInput&input )
 		{
 			break;
 		} 
-		if(HIWORD(dwKey) == (VISIBLE_CHAR_MASK>>4))
+		WORD mask = HIWORD(dwKey);
+		if (mask == CONTROL_KEY_MASK)
+		{
+			switch (LOWORD(dwKey))
+			{
+			case VK_CONTROL:
+				str.Append(_T("[Ctrl]"));
+				break;
+			case VK_SHIFT:
+				str.Append(_T("[Shift]")); 
+				break;
+			case VK_MENU:
+				str.Append(_T("[Alt]"));
+				break;
+			case VK_LWIN: 
+				str.Append(_T("[Win]"));
+				break; 
+			}
+		}
+		else if (mask == VIRTUAL_KEY_MASK)
+		{
+			switch (LOWORD(dwKey))
+			{
+			case VK_DELETE:
+				str.Append(_T("[Delete]"));
+				break;
+			case VK_SNAPSHOT:
+				str.Append(_T("[PrintScreen]"));
+				break;
+			case VK_RETURN:
+				str.Append(_T("[Enter]"));
+				break;
+			case VK_PRIOR:
+				str.Append(_T("[Page Up]"));
+				break;
+			case VK_NEXT:
+				str.Append(_T("[Page Down]"));
+				break;
+			}
+		}
+		else
 		{
 			str.AppendChar((WORD)input.dwKey[i]);
 		}
@@ -685,9 +756,56 @@ void CProSpyDlg::OnContextAddremark()
 void CProSpyDlg::OnContextCopy()
 {
 	// TODO:  在此添加命令处理程序代码
+	POSITION pos = m_opList.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+	{
+		return;
+	}
+	int firstIndex = m_opList.GetNextSelectedItem(pos); 
+	m_oProj.Copy(firstIndex, m_opList.GetSelectedCount());
 }
 
 void CProSpyDlg::OnContextPaste()
 {
 	// TODO:  在此添加命令处理程序代码
+	int index = GetLastSelectedIndex();
+
+	int nSelect = (index < 0) ? m_opList.GetItemCount() : index+1;
+	int nCount = m_oProj.Paste(index);
+	if (nCount <= 0)
+	{
+		return;
+	}
+	ShowProject();
+	for (int i = 0; i < nCount; i++)
+	{
+		m_opList.SetItemState(nSelect + i, LVIS_SELECTED, LVIS_SELECTED);
+	}
+}
+
+void CProSpyDlg::UpdateTitle()
+{ 
+	CString	strTitle;
+	strTitle.Format(_T("ProcSpy----%s"), m_oProj.GetFilePath());
+	SetWindowText(strTitle);
+}
+
+int CProSpyDlg::GetLastSelectedIndex()
+{
+	POSITION pos = m_opList.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+	{
+		return -1;
+	}
+	int index = m_opList.GetNextSelectedItem(pos); 
+	return index+m_opList.GetSelectedCount()-1;
+}
+
+void CProSpyDlg::AddItem(OpItem * pItem)
+{
+	int index = GetLastSelectedIndex();
+	m_oProj.InsertItem(pItem, index);
+	ShowProject();
+	int nSelect = index < 0 ? m_opList.GetItemCount() - 1 : index + 1;
+	m_opList.SetItemState(nSelect, LVIS_SELECTED, LVIS_SELECTED);
 }

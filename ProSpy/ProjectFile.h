@@ -10,16 +10,21 @@ class ProjectFile
 {
 public:
 	ProjectFile();
+	~ProjectFile(void);
 
-	void AddItem(OpItem *pItem);
+	void InsertItem(LPITEM pItem,int index);
 
-	void DeleteItem(OpItem *pItem);
+	void DeleteItem(LPITEM pItem);
 
 	bool MoveUp(int nFirstIndex, int nCount);
 
-	void MoveDown(OpItem *pItem);
+	bool MoveDown(int nFirstIndex, int nCount); 
 
-	list<OpItem*> &GetItemList(){return m_ItemList;}
+	void Copy(int nFirstIndex, int nCount);
+	
+	int Paste(int nIndex);
+
+	OpItemList &GetItemList(){ return m_ItemList; }
 
 	bool Open(LPCTSTR filename = NULL);
 
@@ -27,14 +32,16 @@ public:
 
 	bool IsEmpty(){return m_ItemList.empty();}
 
-	void Discard();
+	void Destroy();
 
 	bool IsModified(){return m_bModified;}
-public:
-	~ProjectFile(void);
+	void SetModified(){ m_bModified = true; }
+	CString GetFilePath(){ return m_strFileName; } 
 private:
 	void DeleteItems();
+	void DestroyCopyList();
 	bool    m_bModified;
 	CString m_strFileName;
-	list<OpItem*> m_ItemList;
+	OpItemList m_ItemList;
+	OpItemList m_copyList;
 };

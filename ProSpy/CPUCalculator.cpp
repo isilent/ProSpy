@@ -1,25 +1,24 @@
 #include "stdafx.h"
 #include "CPUCalculator.h" 
-
-static DWORD dwLastTick = 0;
+ 
 
 VOID CALLBACK TimerCallback(PVOID pParam, BOOLEAN TimerOrWaitFired)
 {
-	CCPUCalculator*pCalc = (CCPUCalculator*)pParam;
+	CPUCalculator*pCalc = (CPUCalculator*)pParam;
 
 	pCalc->Update();
 }
 
-CCPUCalculator::CCPUCalculator()
+CPUCalculator::CPUCalculator()
 {
 }
 
 
-CCPUCalculator::~CCPUCalculator()
+CPUCalculator::~CPUCalculator()
 {
 }
 
-void CCPUCalculator::AddProcessID(DWORD pid)
+void CPUCalculator::AddProcessID(DWORD pid)
 {
 	auto ptr =make_shared<CPURatio>();
 	ptr->fRatio = 0;
@@ -27,17 +26,16 @@ void CCPUCalculator::AddProcessID(DWORD pid)
 	m_mapRatio[pid] = ptr;
 }
 
-void CCPUCalculator::Start()
+void CPUCalculator::Start()
 {
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
-	m_dwProcessorNum = si.dwNumberOfProcessors;
-	m_hTimerQueue = CreateTimerQueue(); 
-	dwLastTick = GetTickCount();
-	CreateTimerQueueTimer(&m_hTimer, m_hTimerQueue, TimerCallback, this, 1000, 1000,0);
+	m_dwCycleTime = si.dwNumberOfProcessors * UPDATE_INTERVAL;
+	m_hTimerQueue = CreateTimerQueue();  
+	CreateTimerQueueTimer(&m_hTimer, m_hTimerQueue, TimerCallback, this, UPDATE_INTERVAL, UPDATE_INTERVAL, 0);
 }
 
-ULONGLONG CCPUCalculator::filetime_2_ull(const FILETIME &ftime)
+ULONGLONG CPUCalculator::filetime_2_ull(const FILETIME &ftime)
 {
 	LARGE_INTEGER li;
 	li.LowPart = ftime.dwLowDateTime;
@@ -45,7 +43,7 @@ ULONGLONG CCPUCalculator::filetime_2_ull(const FILETIME &ftime)
 	return li.QuadPart;
 }
 
-void CCPUCalculator::Update()
+void CPUCalculator::Update()
 { 
 	lock_guard<mutex> lock(m_mutex);
 	for (auto item:m_mapRatio)
@@ -62,30 +60,25 @@ void CCPUCalculator::Update()
 		ULONGLONG total = filetime_2_ull(ft3)+filetime_2_ull(ft4);
 		DWORD dw = GetTickCount();
 		if (item.second->lastCPUTime !=0)
-		{
-			DWORD interval = dw - dwLastTick;
-			DWORD msTime = (total - item.second->lastCPUTime) / 10000;
-			item.second->fRatio = msTime*100.0f/ (interval *m_dwProcessorNum);
-			CString str;
-			str.Format(_T("%d, %d, %f"), msTime,interval,item.second->fRatio);
-			OutputDebugString(str);
-		}
-		dwLastTick = dw;
+		{ 
+			DWORD msTime = DWORD((total - item.second->lastCPUTime) / (UPDATE_INTERVAL*10));
+			item.second->fRatio = msTime*100.0f / m_dwCycleTime	; 
+		} 
 		item.second->lastCPUTime = total;
 	}
 }
 
-void CCPUCalculator::Stop()
+void CPUCalculator::Stop()
 {
 	DeleteTimerQueue(m_hTimerQueue);
 }
 
-float CCPUCalculator::GetCPURatio(DWORD pid)
+float CPUCalculator::GetCPURatio(DWORD pid)
 {
 	lock_guard<mutex> lock(m_mutex);
-	if (m_mapRatio.find(pid)!= m_mapRatio.end())
+	if (m_mapRatio.find(pid) == m_mapRatio.end())
 	{
-		return m_mapRatio[pid]->fRatio;
+		return 0;
 	}
-	return 0;
+	return m_mapRatio[pid]->fRatio;
 }

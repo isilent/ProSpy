@@ -19,7 +19,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -114,6 +114,7 @@
     <ClCompile Include="LimitEdit.cpp" />
     <ClCompile Include="MouseEditDlg.cpp" />
     <ClCompile Include="ProSpy.cpp" />
+    <ClCompile Include="RegEdit.cpp" />
     <ClCompile Include="RemarkDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -133,6 +134,7 @@
     <ClInclude Include="LimitEdit.h" />
     <ClInclude Include="MouseEditDlg.h" />
     <ClInclude Include="ProSpy.h" />
+    <ClInclude Include="RegEdit.h" />
     <ClInclude Include="RemarkDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />

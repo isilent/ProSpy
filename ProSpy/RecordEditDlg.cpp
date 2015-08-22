@@ -11,11 +11,12 @@
 
 IMPLEMENT_DYNAMIC(CRecordEditDlg, CDialog)
 
-CRecordEditDlg::CRecordEditDlg(OpItem *pItem,CWnd* pParent /*=NULL*/)
+CRecordEditDlg::CRecordEditDlg(LPITEM pItem, CWnd* pParent /*=NULL*/)
 	: CDialog(CRecordEditDlg::IDD, pParent)
 	, m_strPID(_T(""))
 	, m_strFilePath(_T("")) 
-	, m_nTimeSpan(100)
+	, m_nTimeSpan(0)
+	, m_strProcess(_T(""))
 {
 	m_pItem = pItem;
 }
@@ -29,8 +30,9 @@ void CRecordEditDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_ProcInfoList);
 	DDX_Text(pDX, IDC_EDIT1, m_strPID);
-	DDX_Text(pDX, IDC_EDIT2, m_strFilePath); 
+	DDX_Text(pDX, IDC_EDIT2, m_strFilePath);
 	DDX_Text(pDX, IDC_EDIT3, m_nTimeSpan);
+	DDX_Text(pDX, IDC_EDIT4, m_strProcess);
 }
 
 
@@ -51,23 +53,23 @@ void CRecordEditDlg::OnOK()
 		return;
 	if (m_strPID.IsEmpty())
 	{
-		AfxMessageBox(_T("请选择一个进程"));
+		AfxMessageBox(_T("Please select a process"));
 		return;
 	}	
 	if (m_strFilePath.IsEmpty())
 	{
-		AfxMessageBox(_T("请设置记录文件路径"));
+		AfxMessageBox(_T("Please set the file path"));
 		return;
 	}
 	if(m_nTimeSpan == 0)
 	{
-		AfxMessageBox(_T("请设置时间间隔"));
+		AfxMessageBox(_T("Please set time interval"));
 		return;
 	}
 	m_pItem->dwTimeSpan = m_nTimeSpan;
 	m_pItem->detail.record.dwProcessID = _wtoi(m_strPID);
 	wcscpy_s(m_pItem->detail.record.szFilePath,MAX_PATH,m_strFilePath); 
-	wcscpy_s(m_pItem->detail.record.szProcessName,PROCESS_NAME_LEN,m_strProcessName);
+	wcscpy_s(m_pItem->detail.record.szProcessName,PROCESS_NAME_LEN,m_strProcess);
 	DWORD mask = 0;
 	for (int i=0 ;i<m_ProcInfoList.GetItemCount(); i++)
 	{
@@ -91,34 +93,32 @@ BOOL CRecordEditDlg::OnInitDialog()
 	m_ProcInfoList.InsertColumn(0,_T(""),LVCFMT_LEFT,140);
 	m_ProcInfoList.InsertItem(row,_T("PID"));
 	m_ProcInfoList.SetItemData(row++,RECORD_PID); 
-	m_ProcInfoList.InsertItem(row,_T("CPU 时间(内核模式)"));
-	m_ProcInfoList.SetItemData(row++,RECORD_CPU_TIME_KERNEL);
-	m_ProcInfoList.InsertItem(row,_T("CPU 时间(用户模式)"));
-	m_ProcInfoList.SetItemData(row++,RECORD_CPU_TIME_USER); 
-	m_ProcInfoList.InsertItem(row,_T("物理内存"));
+	m_ProcInfoList.InsertItem(row,_T("CPU Usage(%)"));
+	m_ProcInfoList.SetItemData(row++,RECORD_CPU_USAGE);
+	m_ProcInfoList.InsertItem(row,_T("Physical Memory"));
 	m_ProcInfoList.SetItemData(row++,RECORD_WORK_SET); 
-	m_ProcInfoList.InsertItem(row,_T("虚拟内存"));
+	m_ProcInfoList.InsertItem(row,_T("Virtual Memory"));
 	m_ProcInfoList.SetItemData(row++,RECORD_VIRTUAL_MEM); 
-	m_ProcInfoList.InsertItem(row,_T("页面错误"));
+	m_ProcInfoList.InsertItem(row,_T("Page Fault"));
 	m_ProcInfoList.SetItemData(row++,RECORD_PAGE_FAULT); 
-	m_ProcInfoList.InsertItem(row,_T("句柄数"));
+	m_ProcInfoList.InsertItem(row,_T("Handle"));
 	m_ProcInfoList.SetItemData(row++,RECORD_HANDLE_COUNT);
-	m_ProcInfoList.InsertItem(row,_T("线程数"));
+	m_ProcInfoList.InsertItem(row,_T("Thread"));
 	m_ProcInfoList.SetItemData(row++,RECORD_THREAD_COUNT);
-	m_ProcInfoList.InsertItem(row,_T("用户对象"));
+	m_ProcInfoList.InsertItem(row,_T("User Object"));
 	m_ProcInfoList.SetItemData(row++,RECORD_USER_OBJECT);
-	m_ProcInfoList.InsertItem(row,_T("GDI对象"));
+	m_ProcInfoList.InsertItem(row,_T("GDI Object"));
 	m_ProcInfoList.SetItemData(row++,RECORD_GDI_COUNT);
-	if (m_pItem->dwTimeSpan >0 )
-	{
-		m_nTimeSpan = m_pItem->dwTimeSpan;
-	}
+	
+	m_nTimeSpan = m_pItem->dwTimeSpan;
+
 	if (m_pItem->detail.record.dwProcessID >0)
 	{
 		m_strPID.Format(_T("%u"),m_pItem->detail.record.dwProcessID);
 	}
+	m_strProcess= m_pItem->detail.record.szProcessName;
 	m_strFilePath = m_pItem->detail.record.szFilePath;
-	m_strProcessName = m_pItem->detail.record.szProcessName;
+
 	for (int i=0 ;i<m_ProcInfoList.GetItemCount(); i++)
 	{
 		if ((m_ProcInfoList.GetItemData(i) & m_pItem->detail.record.dwMask) !=0 )
@@ -139,7 +139,7 @@ void CRecordEditDlg::OnBnClickedBtnSelProc()
 	if(dlg.DoModal()== IDOK)
 	{
 		m_strPID = dlg.GetSelectedPID();
-		m_strProcessName = dlg.GetProcessName();
+		m_strProcess = dlg.GetProcessName();
 		UpdateData(FALSE);
 	}
 }

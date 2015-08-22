@@ -56,6 +56,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <memory>
 using namespace std;
 
 #include <process.h>

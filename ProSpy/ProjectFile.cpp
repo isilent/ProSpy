@@ -1,19 +1,21 @@
 #include "StdAfx.h"
 #include "ProjectFile.h"
+#include "RegEdit.h"
 
 ProjectFile::ProjectFile( )
 {
 	m_bModified = false;
+	m_ItemList.reserve(20);
 }
 
 ProjectFile::~ProjectFile(void)
 {
-	DeleteItems();
+	Destroy();
 }
 
 bool ProjectFile::Open( LPCTSTR filename )
 {
-	Discard();
+	Destroy();
 	if (filename != NULL)
 	{
 		m_strFileName = filename;
@@ -42,6 +44,7 @@ bool ProjectFile::Open( LPCTSTR filename )
 		m_ItemList.push_back(pItem);
 	}
 	file.Close();
+	CRegEdit::WriteValue(HKEY_LOCAL_MACHINE, REG_PATH_APP, REG_ITEM_RUNFILE, m_strFileName);
 	return true;
 }
 
@@ -57,36 +60,38 @@ bool ProjectFile::Save( LPCTSTR filename /*= NULL*/ )
 		m_strFileName.Format(_T("%s\\%s"),Utility::GetModuleDir(NULL).c_str(),DEFAULT_FILENAME);
 	}
 
+
 	CFile file;
 	if(!file.Open(m_strFileName,CFile::modeWrite|CFile::modeCreate|CFile::typeBinary))
 		return false;
 	
 	file.Write(&CURRENT_FILE_VERSION,sizeof(DWORD));
 
-	for (list<OpItem*>::iterator iT = m_ItemList.begin();iT != m_ItemList.end();++iT)
+	for (auto iT = m_ItemList.begin();iT != m_ItemList.end();++iT)
 	{
 		file.Write(*iT,sizeof(OpItem));
 	} 
 	file.Close();
 	m_bModified = false;
+	CRegEdit::WriteValue(HKEY_LOCAL_MACHINE, REG_PATH_APP, REG_ITEM_RUNFILE, m_strFileName);
 	return true;
 }
 
 void ProjectFile::DeleteItems()
 {
-	for(list<OpItem*>::iterator iT = m_ItemList.begin(); iT != m_ItemList.end();iT++)
+	for(auto item : m_ItemList)
 	{
-		if (*iT != NULL)
+		if (item != NULL)
 		{
-			delete (*iT);
+			delete (item);
 		}
-	}
+	} 
 	m_ItemList.clear();
 }
 
-void ProjectFile::DeleteItem( OpItem *pItem )
-{
-	for(list<OpItem*>::iterator iT = m_ItemList.begin(); iT != m_ItemList.end();++iT)
+void ProjectFile::DeleteItem(LPITEM pItem )
+{ 
+	for(auto iT = m_ItemList.begin(); iT != m_ItemList.end();++iT)
 	{
 		if (*iT == pItem)
 		{
@@ -99,60 +104,107 @@ void ProjectFile::DeleteItem( OpItem *pItem )
 }
 
 bool ProjectFile::MoveUp(int nFirstIndex, int nCount)
-{
-	if (nFirstIndex <=0)
+{ 
+	if (((int)m_ItemList.size() <(nFirstIndex+nCount)) || nFirstIndex<=0)
 	{
 		return false;
 	}
-	int index = 0;  
-	list<OpItem*>::iterator itPre; 
-	for(list<OpItem*>::iterator iT = m_ItemList.begin(); iT != m_ItemList.end();iT++)
+	LPITEM pItem = m_ItemList[nFirstIndex-1];
+	for (int i = nFirstIndex; i < nFirstIndex + nCount;i++)
 	{
-		if (index == nFirstIndex)
-		{
-			itPre = iT;
-			--itPre;
-		}
-		if (index == nFirstIndex+nCount)
-		{
-			m_ItemList.insert(iT, *itPre);
-			break;
-		}
-		index++;
+		m_ItemList[i-1] = m_ItemList[i];
 	}
-	if (index == m_ItemList.size())
-	{
-		m_ItemList.push_back(*itPre);
-	}
-	m_ItemList.erase(itPre); 
+	m_ItemList[nFirstIndex + nCount-1] = pItem;   
+
 	m_bModified =true;
 	return true;
 }
+ 
 
-void ProjectFile::MoveDown( OpItem *pItem )
+bool ProjectFile::MoveDown(int nFirstIndex, int nCount)
 {
-	for(list<OpItem*>::iterator iT = m_ItemList.begin(); iT != m_ItemList.end();++iT)
+	if (((int)m_ItemList.size() <= (nFirstIndex + nCount)) || nFirstIndex<0)
 	{
-		if (*iT == pItem)
-		{
-			list<OpItem*>::iterator itAfter = m_ItemList.erase(iT);
-			++itAfter;
-			m_ItemList.insert(itAfter,pItem);
-			break;
-		}
+		return false;
 	}
-	m_bModified =true;
+	LPITEM pItem = m_ItemList[nFirstIndex+nCount];
+	for (int i = nFirstIndex + nCount; i > nFirstIndex ; i--)
+	{
+		m_ItemList[i] = m_ItemList[i-1];
+	}
+	m_ItemList[nFirstIndex] = pItem;
+
+	m_bModified = true;
+	return true;
 }
 
-void ProjectFile::Discard()
+void ProjectFile::Destroy()
 {
+	DestroyCopyList();
 	DeleteItems();
 	m_strFileName=L"";
 	m_bModified = false;
 }
 
-void ProjectFile::AddItem( OpItem *pItem )
+void ProjectFile::InsertItem(LPITEM pItem,int index)
 {
-	m_ItemList.push_back(pItem);
+	if (index<0||index >= (int)m_ItemList.size())
+	{
+		m_ItemList.push_back(pItem);
+	}
+	else
+	{
+		m_ItemList.insert(m_ItemList.begin() + index+1, pItem);
+	}
 	m_bModified = true;
+}
+
+void ProjectFile::Copy(int nFirstIndex, int nCount)
+{ 
+	DestroyCopyList();
+	if (nFirstIndex<0 || (nFirstIndex + nCount)>(int)m_ItemList.size())
+		return;
+	for (int i = nFirstIndex; i < nFirstIndex + nCount;i++)
+	{
+		LPITEM pItem = new OpItem;
+		*pItem = *m_ItemList[i];
+		m_copyList.push_back(pItem);
+	}
+}
+
+void ProjectFile::DestroyCopyList()
+{ 
+	for (auto item : m_copyList)
+	{
+		if (item != NULL)
+		{
+			delete (item);
+		}
+	}
+	m_copyList.clear();
+}
+
+int ProjectFile::Paste(int nIndex)
+{
+	if (m_copyList.empty())
+	{
+		return 0;
+	}
+	OpItemList tmpList; 	
+	for (auto &item : m_copyList)
+	{
+		LPITEM pItem = new OpItem;
+		*pItem = *item;
+		tmpList.push_back(pItem);
+	}
+	if (nIndex <0 || nIndex >= (int)m_ItemList.size())
+	{ 
+		m_ItemList.insert(m_ItemList.end(),tmpList.begin(),tmpList.end()); 
+	}
+	else
+	{ 
+		m_ItemList.insert(m_ItemList.begin()+nIndex+1,tmpList.begin(),tmpList.end()); 
+	}
+	m_bModified = true; 
+	return (int)tmpList.size();
 }

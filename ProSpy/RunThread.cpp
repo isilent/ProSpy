@@ -2,53 +2,20 @@
 #include <tlhelp32.h>
 #include "RunThread.h"
 
-CRunThread::CRunThread(const HWND &hwnd, const list<OpItem*> &itemList)
-{
-	m_hThread = 0;
+CRunThread::CRunThread(const HWND &hwnd, const OpItemList &itemList)
+{ 
 	m_bRunning = false;
-	m_ItemList = itemList; 
-	m_nCount = 0;
+	m_ItemList = itemList;  
 	m_hMainWnd = hwnd;
 }
 
 CRunThread::~CRunThread(void)
 {
-}
-
-unsigned int __stdcall Run( PVOID pParam )
-{
-	CRunThread *pThread = (CRunThread*)pParam;
-	pThread->m_nCount = 0;
-	while(pThread->m_bRunning 
-		&& (pThread->m_nMaxCount<=0 ||pThread->m_nCount<pThread->m_nMaxCount))
+	if (m_pThread != nullptr)
 	{
-		for (list<OpItem*>::iterator iT =pThread->m_ItemList.begin();
-			iT != pThread->m_ItemList.end() && pThread->m_bRunning; ++iT)
-		{
-			switch((*iT)->type)
-			{
-			case OP_RECORD:
-				pThread->Record((*iT)->detail.record);
-				break;
-			case OP_LCLICK: 
-			case OP_RCLICK: 
-			case OP_DBCICK:
-				pThread->MouseClick((*iT));
-				break;
-			case OP_KEY_INPUT:
-				pThread->KeyInput((*iT));
-				break;
-			default:
-				break;
-			}
-			if(!pThread->TrySleep((*iT)->dwTimeSpan *10))
-				break;
-		} 
-		pThread->m_nCount++;
+		m_pThread->join();
+		m_pThread = nullptr;
 	}
-	pThread->m_calc.Stop();
-	PostMessage(pThread->m_hMainWnd,WM_THREAD_STOP,(WPARAM)pThread->m_nCount,0);
-	return 0;
 }
 
 void CRunThread::Start(int nRunCount)
@@ -57,21 +24,55 @@ void CRunThread::Start(int nRunCount)
 	m_bRunning = true; 
 	for (auto ptr : m_ItemList)
 	{
-		if (ptr->type == OP_RECORD && (ptr->detail.record.dwMask & (RECORD_CPU_TIME_KERNEL | RECORD_CPU_TIME_USER)))
+		if (ptr->type == OP_RECORD && (ptr->detail.record.dwMask & (RECORD_CPU_USAGE)))
 		{
 			m_calc.AddProcessID(ptr->detail.record.dwProcessID);
 		}
 	}
 	m_calc.Start();
-	m_hThread = (HANDLE)_beginthreadex(NULL,0,Run,this,0,NULL);
+
+	m_pThread = make_shared<thread>(bind(&CRunThread::Run, this));
 }
 
 void CRunThread::Stop()
 {
 	m_bRunning = false;
-	WaitForSingleObject(m_hThread,INFINITE); 
-	CloseHandle(m_hThread);
-	m_hThread = NULL;
+}
+
+void CRunThread::Run()
+{ 
+	int nCount = 0;
+	while (m_bRunning && (m_nMaxCount <= 0 ||nCount < m_nMaxCount))
+	{
+		for (auto &pItem:m_ItemList)
+		{
+			if (!m_bRunning)
+			{
+				break;
+			}
+			switch (pItem->type)
+			{
+			case OP_RECORD:
+				Record(pItem->detail.record);
+				break;
+			case OP_LCLICK:
+			case OP_RCLICK:
+			case OP_DBCICK:
+				MouseClick(pItem);
+				break;
+			case OP_KEY_INPUT:
+				KeyInput(pItem->detail.keyinput);
+				break;
+			default:
+				break;
+			}
+			if (!TrySleep(pItem->dwTimeSpan))
+				break;
+		}
+		nCount++;
+	}
+	m_calc.Stop();
+	PostMessage(m_hMainWnd, WM_THREAD_STOP, (WPARAM)nCount, 0); 
 }
 
 void CRunThread::Record( const OpRecord &op )
@@ -85,14 +86,15 @@ void CRunThread::Record( const OpRecord &op )
 		str.Format(_T("[ProSpy] OpenProcess error PID:%d"),op.dwProcessID);
 		OutputDebugString(str);
 		return;
-	} 
-	if (!m_file.Open(op.szFilePath,CFile::modeWrite|CFile::modeNoTruncate|CFile::modeCreate| CFile::typeText))
+	}
+	CStdioFile  file;
+	if (!file.Open(op.szFilePath, CFile::modeWrite | CFile::modeNoTruncate | CFile::modeCreate | CFile::typeText))
 	{
 		OutputDebugString(_T("[ProSpy] Open record file error"));
 		return;
 	}
 
-	if (m_file.GetLength() == 0)
+	if (file.GetLength() == 0)
 	{
 		CString strHeader = _T("Process,Time,");
 		for (int i=0;i<sizeof(c_recordHeaders)/sizeof(c_recordHeaders[0]); i++)
@@ -103,11 +105,11 @@ void CRunThread::Record( const OpRecord &op )
 			}
 		}
 		strHeader.Append(_T("\n"));
-		m_file.WriteString(strHeader); 
+		file.WriteString(strHeader);
 	}
 	else
 	{
-		m_file.SeekToEnd();
+		file.SeekToEnd();
 	} 
 
 	CString strContent;
@@ -116,21 +118,11 @@ void CRunThread::Record( const OpRecord &op )
 	{
 		strContent.AppendFormat(_T("%u,"),op.dwProcessID);
 	} 
-	if (op.dwMask & (RECORD_CPU_TIME_KERNEL|RECORD_CPU_TIME_USER))
+	if (op.dwMask & (RECORD_CPU_USAGE))
 	{ 
-		FILETIME ft1,ft2,ft3,ft4;
-		GetProcessTimes(hProcess,&ft1,&ft2,&ft3,&ft4);
-		if (op.dwMask & RECORD_CPU_TIME_KERNEL)
-		{
-			ULONGLONG kernel = filetime_2_ull(&ft3); 
-			strContent.AppendFormat(_T("%I64u,"),kernel/10000); //显示时单位取ms
-		}
-		if (op.dwMask & RECORD_CPU_TIME_USER)
-		{
-			ULONGLONG user = filetime_2_ull(&ft4); 
-			strContent.AppendFormat(_T("%I64u,"),user/10000);
-		} 
+		strContent.AppendFormat(_T("%.2f,"),m_calc.GetCPURatio(op.dwProcessID));
 	}
+
 	PROCESS_MEMORY_COUNTERS memInfo;
 	GetProcessMemoryInfo(hProcess,&memInfo,sizeof(PROCESS_MEMORY_COUNTERS));
 
@@ -193,20 +185,12 @@ void CRunThread::Record( const OpRecord &op )
 		strContent.AppendFormat(_T("%u,"),dwCnt);
 	}
 	strContent.Append(_T("\n"));
-	m_file.WriteString(strContent);
-	m_file.Close();
+	file.WriteString(strContent);
+	file.Close();
 	CloseHandle( hProcess );
 }
-
-ULONGLONG CRunThread::filetime_2_ull( const FILETIME* ftime )
-{
-	LARGE_INTEGER li;   
-	li.LowPart = ftime->dwLowDateTime;   
-	li.HighPart = ftime->dwHighDateTime;   
-	return li.QuadPart;   
-}
  
-void CRunThread::MouseClick( const OpItem* pItem)
+void CRunThread::MouseClick(LPITEM pItem)
 {
 	SetCursorPos(pItem->detail.pos.x,pItem->detail.pos.y);
 	DWORD keydown = 0,keyup = 0; 
@@ -230,13 +214,13 @@ void CRunThread::MouseClick( const OpItem* pItem)
 	}
 }
 
-void CRunThread::KeyInput(const OpItem* pItem)
+void CRunThread::KeyInput(const OpKeyInput &key)
 {
 	vector<INPUT> inputAry;
 	vector<INPUT> releaseAry;
 	for (int i=0;i<KEYINPUT_MAX;i++)
 	{
-		DWORD dwKey = pItem->detail.keyinput.dwKey[i];
+		DWORD dwKey = key.dwKey[i];
 		if (dwKey == 0)
 		{
 			break;
@@ -251,14 +235,14 @@ void CRunThread::KeyInput(const OpItem* pItem)
 		keyup.ki.dwFlags = KEYEVENTF_KEYUP;
 
 		WORD mask = HIWORD(dwKey);
-		if(mask == (CONTROL_KEY_MASK>>4)) //控制键
+		if (mask == CONTROL_KEY_MASK ) //控制键
 		{ 
 			keydown.ki.wVk = LOWORD(dwKey); 
 			keyup.ki.wVk= keydown.ki.wVk;
 			inputAry.push_back(keydown);
 			releaseAry.push_back(keyup);
 		}  
-		else if(mask == (VIRTUAL_KEY_MASK>>4)) //特殊键
+		else if (mask == VIRTUAL_KEY_MASK) //特殊键
 		{
 			keydown.ki.wVk = LOWORD(dwKey); 
 			keyup.ki.wVk = keydown.ki.wVk;
@@ -285,13 +269,13 @@ void CRunThread::KeyInput(const OpItem* pItem)
 
 bool CRunThread::TrySleep(DWORD dwTimeSpan)
 {
-	//超过1s的sleep分成多次，加快终止操作时的响应速度
-	int count = dwTimeSpan / 1000;
-	int remainder = dwTimeSpan % 1000;
+	//长时间的sleep分成多次，加快终止操作时的响应速度
+	int count = dwTimeSpan / 200;
+	int remainder = dwTimeSpan % 200;
 	Sleep(remainder);
 	while(m_bRunning && count-->0)
 	{
-		Sleep(1000); 
+		Sleep(200); 
 	}
 	return m_bRunning;
 }

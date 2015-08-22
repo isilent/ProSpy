@@ -7,7 +7,7 @@
 
 #define GET_SPECIAL_KEY(buttonId,vkey)  \
 	if(((CButton*)GetDlgItem(buttonId))->GetCheck() == BST_CHECKED){\
-	m_pItem->detail.keyinput.dwKey[index++] = vkey | VIRTUAL_KEY_MASK;}
+	m_pItem->detail.keyinput.dwKey[index++] = vkey | ((DWORD)VIRTUAL_KEY_MASK<<MASK_SHIFT_COUNT);}
 
 #define SWITCH_KEY_VALUE(vkey,buttonId) \
 	case vkey:{((CButton*)GetDlgItem(buttonId))->SetCheck(BST_CHECKED);break;}
@@ -16,10 +16,10 @@
 
 IMPLEMENT_DYNAMIC(CKeyEditDlg, CDialog)
 
-CKeyEditDlg::CKeyEditDlg(OpItem *pItem, CWnd* pParent /*=NULL*/)
+CKeyEditDlg::CKeyEditDlg(LPITEM pItem, CWnd* pParent /*=NULL*/)
 	: CDialog(CKeyEditDlg::IDD, pParent)
 	, m_strInput(_T(""))
-	, m_nTimeSpan(100)
+	, m_nTimeSpan(0)
 {
 	m_pItem = pItem;
 }
@@ -71,10 +71,7 @@ BOOL CKeyEditDlg::OnInitDialog()
 				break;
 		} 
 	}
-	if (m_pItem->dwTimeSpan >0 )
-	{
-		m_nTimeSpan = m_pItem->dwTimeSpan;
-	} 
+	m_nTimeSpan = m_pItem->dwTimeSpan;
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
@@ -102,19 +99,19 @@ void CKeyEditDlg::GetControlKeys(int &index)
 {
 	if(((CButton*)GetDlgItem(IDC_CHK_CTRL))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_CONTROL | CONTROL_KEY_MASK;
+		m_pItem->detail.keyinput.dwKey[index++] = VK_CONTROL | ((DWORD)CONTROL_KEY_MASK << MASK_SHIFT_COUNT);
 	}
 	if (((CButton*)GetDlgItem(IDC_CHK_SHIFT))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_SHIFT | CONTROL_KEY_MASK;
+		m_pItem->detail.keyinput.dwKey[index++] = VK_SHIFT | ((DWORD)CONTROL_KEY_MASK << MASK_SHIFT_COUNT);
 	}
 	if (((CButton*)GetDlgItem(IDC_CHK_ALT))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_MENU | CONTROL_KEY_MASK;
+		m_pItem->detail.keyinput.dwKey[index++] = VK_MENU | ((DWORD)CONTROL_KEY_MASK << MASK_SHIFT_COUNT);
 	}	
 	if (((CButton*)GetDlgItem(IDC_CHK_WIN))->GetCheck() == BST_CHECKED)
 	{
-		m_pItem->detail.keyinput.dwKey[index++] = VK_LWIN | CONTROL_KEY_MASK;
+		m_pItem->detail.keyinput.dwKey[index++] = VK_LWIN | ((DWORD)CONTROL_KEY_MASK << MASK_SHIFT_COUNT);
 	} 
 }
 

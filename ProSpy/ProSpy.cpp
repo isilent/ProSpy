@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ProSpy.h"
 #include "ProSpyDlg.h"
+//#include <vld.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -10,7 +10,7 @@ class CKeyEditDlg : public CDialog
 	DECLARE_DYNAMIC(CKeyEditDlg)
 
 public:
-	CKeyEditDlg(OpItem *pItem,CWnd* pParent = NULL);   // 标准构造函数
+	CKeyEditDlg(LPITEM pItem, CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CKeyEditDlg();
 
 // 对话框数据
@@ -22,7 +22,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	CString m_strInput;
 	UINT m_nTimeSpan;
-	OpItem *m_pItem;
+	LPITEM m_pItem;
 	CLimitEdit m_inputEdit;
 public:
 	virtual BOOL OnInitDialog();

@@ -5,6 +5,7 @@
 
 #define PROCESS_NAME_LEN 64
 #define KEYINPUT_MAX     32
+#define DEFAULT_INTERVAL 1000
 
 enum OPERATOR_TYPE
 {
@@ -16,10 +17,8 @@ enum OPERATOR_TYPE
 	OP_KEY_INPUT    //键盘输入
 };
 
-
 #define RECORD_PID				0x0001 
-#define RECORD_CPU_TIME_KERNEL	0x0002
-#define RECORD_CPU_TIME_USER	0x0004
+#define RECORD_CPU_USAGE    	0x0002
 
 #define RECORD_WORK_SET			0x0010 
 #define RECORD_VIRTUAL_MEM		0x0020
@@ -30,6 +29,8 @@ enum OPERATOR_TYPE
 #define RECORD_USER_OBJECT		0x0400
 #define RECORD_GDI_COUNT		0x0800
 
+#define RECORD_ALL (0xF73)
+
 struct RECORD_COLUMN
 {
 	DWORD dwMask;
@@ -38,8 +39,7 @@ struct RECORD_COLUMN
 
 const RECORD_COLUMN c_recordHeaders[] = {
 	{RECORD_PID,_T("PID")}, 
-	{RECORD_CPU_TIME_KERNEL,_T("CPU Kernel Time(ms)")},
-	{RECORD_CPU_TIME_USER,_T("CPU User Time(ms)")},
+	{RECORD_CPU_USAGE,_T("CPU Usage(%)")},
 	{RECORD_WORK_SET,_T("Physical Memory(KB)")}, 
 	{RECORD_VIRTUAL_MEM,_T("Virtual Memory(KB)")},
 	{RECORD_PAGE_FAULT,_T("Page Fault")},
@@ -57,9 +57,11 @@ struct OpRecord
 	TCHAR  szProcessName[PROCESS_NAME_LEN];
 };
 
-#define VISIBLE_CHAR_MASK 0x000000   //不按Shift时能打出的可见字符，如‘%’不在此列，
-#define CONTROL_KEY_MASK  0x010000   //表示ctrl、Alt、Shift，这些键需要一直保持按下状态直到其他键释放
-#define VIRTUAL_KEY_MASK  0X020000   //不可见字符，得到的直接是虚拟键值
+#define VISIBLE_CHAR_MASK 0x0000   //不按Shift时能打出的可见字符，如‘%’不在此列，
+#define CONTROL_KEY_MASK  0x0001   //表示ctrl、Alt、Shift，这些键需要一直保持按下状态直到其他键释放
+#define VIRTUAL_KEY_MASK  0x0002   //不可见字符，得到的直接是虚拟键值
+
+#define MASK_SHIFT_COUNT 16
 struct OpKeyInput
 {
 	DWORD dwKey[KEYINPUT_MAX];  //高位字表示类型，低位字表示虚拟键值
@@ -86,4 +88,11 @@ struct OpItem
 	}
 };
 
+typedef OpItem* LPITEM;
+typedef vector<LPITEM> OpItemList;
+
 #define WM_THREAD_STOP (WM_USER + 0x0010)
+
+
+#define REG_PATH_APP      _T("SOFTWARE\\ProcSpy")
+#define REG_ITEM_RUNFILE  _T("RunFile")

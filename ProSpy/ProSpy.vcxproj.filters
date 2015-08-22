@@ -63,6 +63,9 @@
     <ClCompile Include="CPUCalculator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RegEdit.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProSpy.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="CPUCalculator.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RegEdit.h">
+      <Filter>Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

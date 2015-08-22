@@ -14,7 +14,7 @@ CMouseEditDlg::CMouseEditDlg(OpItem *pItem,CWnd* pParent /*=NULL*/)
 	: CDialog(CMouseEditDlg::IDD, pParent)
 	, m_nX(0)
 	, m_nY(0)
-	, m_nTimeSpan(50)
+	, m_nTimeSpan(0)
 {
 	m_pItem = pItem;
 }
@@ -81,10 +81,7 @@ BOOL CMouseEditDlg::OnInitDialog()
 		((CButton*)GetDlgItem(IDC_RADIO3))->SetCheck(BST_CHECKED);
 		break;
 	}
-	if (m_pItem->dwTimeSpan >0 )
-	{
-		m_nTimeSpan = m_pItem->dwTimeSpan;
-	} 
+	m_nTimeSpan = m_pItem->dwTimeSpan;
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE

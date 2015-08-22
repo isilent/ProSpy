@@ -39,10 +39,10 @@ BOOL CEnumProcDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-	m_procList.SetExtendedStyle(m_procList.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_procList.InsertColumn(0,_T("进程名称"),LVCFMT_LEFT,180);
+	m_procList.SetExtendedStyle(m_procList.GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+	m_procList.InsertColumn(0,_T("Process"),LVCFMT_LEFT,180);
 	m_procList.InsertColumn(1,_T("PID"),LVCFMT_LEFT,60);
-	DWORD aProcesses[1024], cbNeeded, cProcesses; 
+	DWORD aProcesses[2048], cbNeeded, cProcesses; 
 	if (!EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ))
 		return TRUE;
 	cProcesses = cbNeeded / sizeof(DWORD);

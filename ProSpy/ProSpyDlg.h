@@ -16,20 +16,25 @@ public:
 // 对话框数据
 	enum { IDD = IDD_PROSPY_DIALOG };
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 private:
-	void AddItemToList( OpItem *pItem );
+	int GetLastSelectedIndex();
+	void UpdateTitle();
+	void AddItemToList(LPITEM pItem);
 	void ShowProject();
 	void AddMouseOperation(int x, int y, bool showDlg);
+
+	void AddItem(OpItem * pItem);
+
 	CString GetKeyInput(const OpKeyInput&input);
 // 实现
 protected:
 	HICON m_hIcon;
 	CListCtrl m_opList;
 	ProjectFile m_oProj; 
-	CRunThread *m_pThread;
+	shared_ptr<CRunThread> m_pThread = nullptr;
 	CStatic m_cStatic;
 	bool m_bCaptureCursor;
 	HCURSOR m_hCursor;
@@ -58,7 +63,7 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextEdit();
-	void UpdateItem( int index, OpItem *pItem );
+	void UpdateItem(int index, LPITEM pItem);
 	afx_msg void OnContextDelete();
 	afx_msg void OnContextMoveup();
 	afx_msg void OnContextMovedown();
