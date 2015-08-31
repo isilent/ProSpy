@@ -118,10 +118,15 @@ void CRunThread::Record( const OpRecord &op )
 	{
 		strContent.AppendFormat(_T("%u,"),op.dwProcessID);
 	} 
-	if (op.dwMask & (RECORD_CPU_USAGE))
-	{ 
-		strContent.AppendFormat(_T("%.2f,"),m_calc.GetCPURatio(op.dwProcessID));
-	}
+	if (op.dwMask & (RECORD_CPU_USAGE | RECORD_KERNEL_CPU))
+	{
+		float kernel, total;
+		m_calc.GetCPURatio(op.dwProcessID, kernel, total);
+		if (op.dwMask & (RECORD_CPU_USAGE))
+			strContent.AppendFormat(_T("%.2f,"), total);
+		if (op.dwMask & (RECORD_KERNEL_CPU)) 
+			strContent.AppendFormat(_T("%.2f,"), kernel);
+	} 
 
 	PROCESS_MEMORY_COUNTERS memInfo;
 	GetProcessMemoryInfo(hProcess,&memInfo,sizeof(PROCESS_MEMORY_COUNTERS));

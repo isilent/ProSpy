@@ -718,6 +718,9 @@ CString CProSpyDlg::GetKeyInput( const OpKeyInput&input )
 			case VK_RETURN:
 				str.Append(_T("[Enter]"));
 				break;
+			case VK_BACK:
+				str.Append(_T("[Backspace]"));
+				break;
 			case VK_PRIOR:
 				str.Append(_T("[Page Up]"));
 				break;

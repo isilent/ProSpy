@@ -94,7 +94,9 @@ BOOL CRecordEditDlg::OnInitDialog()
 	m_ProcInfoList.InsertItem(row,_T("PID"));
 	m_ProcInfoList.SetItemData(row++,RECORD_PID); 
 	m_ProcInfoList.InsertItem(row,_T("CPU Usage(%)"));
-	m_ProcInfoList.SetItemData(row++,RECORD_CPU_USAGE);
+	m_ProcInfoList.SetItemData(row++, RECORD_CPU_USAGE);
+	m_ProcInfoList.InsertItem(row, _T("CPU Kernel(%)"));
+	m_ProcInfoList.SetItemData(row++, RECORD_KERNEL_CPU);
 	m_ProcInfoList.InsertItem(row,_T("Physical Memory"));
 	m_ProcInfoList.SetItemData(row++,RECORD_WORK_SET); 
 	m_ProcInfoList.InsertItem(row,_T("Virtual Memory"));

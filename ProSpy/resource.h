@@ -47,6 +47,8 @@
 #define IDC_CHK_UP                      1024
 #define IDC_CHK_DOWN                    1025
 #define IDC_EDIT4                       1026
+#define IDC_CHECK1                      1027
+#define IDC_CHK_BACK                    1027
 #define ID_HELP_ABOUT                   32771
 #define ID_FILE_NEW32772                32772
 #define ID_FILE_OPEN32773               32773
@@ -74,7 +76,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

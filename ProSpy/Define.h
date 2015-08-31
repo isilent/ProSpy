@@ -19,6 +19,7 @@ enum OPERATOR_TYPE
 
 #define RECORD_PID				0x0001 
 #define RECORD_CPU_USAGE    	0x0002
+#define RECORD_KERNEL_CPU    	0x0004
 
 #define RECORD_WORK_SET			0x0010 
 #define RECORD_VIRTUAL_MEM		0x0020
@@ -29,7 +30,6 @@ enum OPERATOR_TYPE
 #define RECORD_USER_OBJECT		0x0400
 #define RECORD_GDI_COUNT		0x0800
 
-#define RECORD_ALL (0xF73)
 
 struct RECORD_COLUMN
 {
@@ -39,7 +39,8 @@ struct RECORD_COLUMN
 
 const RECORD_COLUMN c_recordHeaders[] = {
 	{RECORD_PID,_T("PID")}, 
-	{RECORD_CPU_USAGE,_T("CPU Usage(%)")},
+	{RECORD_CPU_USAGE, _T("CPU Usage(%)") },
+	{RECORD_KERNEL_CPU, _T("CPU Kernel(%)") },
 	{RECORD_WORK_SET,_T("Physical Memory(KB)")}, 
 	{RECORD_VIRTUAL_MEM,_T("Virtual Memory(KB)")},
 	{RECORD_PAGE_FAULT,_T("Page Fault")},

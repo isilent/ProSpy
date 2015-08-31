@@ -20,9 +20,7 @@ CPUCalculator::~CPUCalculator()
 
 void CPUCalculator::AddProcessID(DWORD pid)
 {
-	auto ptr =make_shared<CPURatio>();
-	ptr->fRatio = 0;
-	ptr->lastCPUTime = 0;
+	auto ptr =make_shared<CPURatio>(); 
 	m_mapRatio[pid] = ptr;
 }
 
@@ -57,14 +55,21 @@ void CPUCalculator::Update()
 		}
 		FILETIME ft1, ft2, ft3, ft4;
 		GetProcessTimes(hProcess, &ft1, &ft2, &ft3, &ft4);
-		ULONGLONG total = filetime_2_ull(ft3)+filetime_2_ull(ft4);
-		DWORD dw = GetTickCount();
-		if (item.second->lastCPUTime !=0)
+		ULONGLONG kernel = filetime_2_ull(ft3);
+		ULONGLONG total = kernel + filetime_2_ull(ft4);
+
+		if (item.second->lastTotalTime !=0)
 		{ 
-			DWORD msTime = DWORD((total - item.second->lastCPUTime) / (UPDATE_INTERVAL*10));
-			item.second->fRatio = msTime*100.0f / m_dwCycleTime	; 
-		} 
-		item.second->lastCPUTime = total;
+			DWORD microTime = DWORD((total - item.second->lastTotalTime) / 10);
+			item.second->totalRatio = microTime*100.0f / (m_dwCycleTime*1000);
+		}
+		if (item.second->lastKernelTime != 0)
+		{
+			DWORD microTime = DWORD((kernel - item.second->lastKernelTime) / 10);
+			item.second->kernelRatio = microTime*100.0f / (m_dwCycleTime*1000);
+		}
+		item.second->lastTotalTime = total;
+		item.second->lastKernelTime = kernel;
 	}
 }
 
@@ -73,12 +78,15 @@ void CPUCalculator::Stop()
 	DeleteTimerQueue(m_hTimerQueue);
 }
 
-float CPUCalculator::GetCPURatio(DWORD pid)
-{
+bool CPUCalculator::GetCPURatio(DWORD pid, float &kernel, float &total)
+{ 
 	lock_guard<mutex> lock(m_mutex);
-	if (m_mapRatio.find(pid) == m_mapRatio.end())
+	auto iter = m_mapRatio.find(pid);
+	if (iter == m_mapRatio.end())
 	{
-		return 0;
+		return false;
 	}
-	return m_mapRatio[pid]->fRatio;
+	kernel = iter->second->kernelRatio;
+	total = iter->second->totalRatio;
+	return true;
 }

@@ -9,8 +9,15 @@ using namespace std;
 
 struct CPURatio
 {
-	ULONGLONG lastCPUTime;
-	float fRatio;
+	ULONGLONG lastTotalTime;
+	ULONGLONG lastKernelTime;
+	float totalRatio;
+	float kernelRatio;
+	CPURatio()
+	{
+		lastKernelTime = lastTotalTime = 0;
+		totalRatio = kernelRatio = 0;
+	}
 };
 
 class CPUCalculator
@@ -22,7 +29,7 @@ public:
 	void Start();
 	void Update();
 	void Stop();
-	float GetCPURatio(DWORD pid);
+	bool GetCPURatio(DWORD pid, float &kernel, float &total);
 private:
 	ULONGLONG filetime_2_ull(const FILETIME &ftime);
 	HANDLE m_hTimerQueue;
