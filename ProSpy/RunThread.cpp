@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include <tlhelp32.h>
+#include <functional>
 #include "RunThread.h"
 
 CRunThread::CRunThread(const HWND &hwnd, const OpItemList &itemList)
@@ -31,7 +32,7 @@ void CRunThread::Start(int nRunCount)
 	}
 	m_calc.Start();
 
-	m_pThread = make_shared<thread>(bind(&CRunThread::Run, this));
+	m_pThread = make_shared<thread>(std::bind(&CRunThread::Run, this));
 }
 
 void CRunThread::Stop()
